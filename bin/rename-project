@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+APP_NAME="${1}"
+MODULE_NAME="${2}"
+
+FIND_APP_NAME="gagglehomev2"
+FIND_MODULE_NAME="GaggleHomeV2"
+FIND_FRAMEWORK="django-react"
+
+# Validate arguments are provided
+if [ -z "${APP_NAME}" ] || [ -z "${MODULE_NAME}" ]; then
+    echo "You must supply both an app and module name, example: ${0} myapp MyApp"
+    exit 1
+fi
+
+# Validate app name format (lowercase, no spaces, no special chars except underscore)
+if [[ ! "${APP_NAME}" =~ ^[a-z][a-z0-9_]*$ ]]; then
+    echo "❌ Error: APP_NAME must be lowercase, start with a letter, and contain only letters, numbers, and underscores"
+    echo "   Examples: myapp, my_app, myapp123"
+    exit 1
+fi
+
+# Validate module name format (PascalCase, no spaces, no special chars)
+if [[ ! "${MODULE_NAME}" =~ ^[A-Z][a-zA-Z0-9]*$ ]]; then
+    echo "❌ Error: MODULE_NAME must be PascalCase and contain only letters and numbers"
+    echo "   Examples: MyApp, MyNewApp, MyApp123"
+    exit 1
+fi
+
+# Check if name is different from current
+if [ "${APP_NAME}" = "${FIND_APP_NAME}" ]; then
+    echo "Your new app name must be different than the current app name"
+    exit 1
+fi
+
+cat << EOF
+When renaming your project you'll need to re-create a new database.
+
+This can easily be done with Docker, but before this script does it
+please agree that it's ok for this script to delete your current
+project's database(s) by removing any associated Docker volumes.
+
+EOF
+
+while true; do
+    read -p "Run docker compose down -v (y/n)? " -r yn
+    case "${yn}" in
+        [Yy]* )
+          printf "\n--------------------------------------------------------\n"
+          docker compose down -v
+          printf -- "--------------------------------------------------------\n"
+
+          break;;
+        [Nn]* ) exit;;
+        * ) echo "";;
+    esac
+done
+
+# -----------------------------------------------------------------------------
+# The core of the script which renames a few things.
+# -----------------------------------------------------------------------------
+echo "🔄 Renaming project files..."
+find . -type f -exec \
+  perl -i \
+    -pe "s/(${FIND_APP_NAME}${FIND_FRAMEWORK}|${FIND_APP_NAME})/${APP_NAME}/g;" \
+    -pe "s/${FIND_MODULE_NAME}/${MODULE_NAME}/g;" {} +
+
+# Update .env file if it exists
+if [ -f .env ]; then
+  echo "📝 Updating .env with new project name..."
+  perl -i -pe "s/COMPOSE_PROJECT_NAME=.*/COMPOSE_PROJECT_NAME=${APP_NAME}/g" .env
+  perl -i -pe "s/POSTGRES_USER=.*/POSTGRES_USER=${APP_NAME}/g" .env
+  perl -i -pe "s/POSTGRES_DB=.*/POSTGRES_DB=${APP_NAME}/g" .env
+  echo "✅ .env updated"
+fi
+
+# Update .env.example as well
+if [ -f .env.example ]; then
+  echo "📝 Updating .env.example with new project name..."
+  perl -i -pe "s/COMPOSE_PROJECT_NAME=.*/COMPOSE_PROJECT_NAME=${APP_NAME}/g" .env.example
+  perl -i -pe "s/POSTGRES_USER=.*/POSTGRES_USER=${APP_NAME}/g" .env.example
+  perl -i -pe "s/POSTGRES_DB=.*/POSTGRES_DB=${APP_NAME}/g" .env.example
+  echo "✅ .env.example updated"
+fi
+# -----------------------------------------------------------------------------
+
+cat << EOF
+
+--------------------------------------------------------
+✅ Your project has been renamed successfully!
+--------------------------------------------------------
+
+Changes made:
+  • App name:     ${FIND_APP_NAME} → ${APP_NAME}
+  • Module name:  ${FIND_MODULE_NAME} → ${MODULE_NAME}
+  • .env:         COMPOSE_PROJECT_NAME=${APP_NAME}
+  • Database:     POSTGRES_DB=${APP_NAME}
+
+EOF
+
+function init_git_repo {
+  [ -d .git/ ] && rm -rf .git/
+
+cat << EOF
+
+--------------------------------------------------------
+$(git init)
+--------------------------------------------------------
+EOF
+
+  git symbolic-ref HEAD refs/heads/main
+}
+
+while true; do
+    read -p "Do you want to init a new local git repo (y/n)? " -r yn
+    case "${yn}" in
+        [Yy]* ) init_git_repo; break;;
+        [Nn]* ) break;;
+        * ) echo "";;
+    esac
+done
+
+cat << EOF
+
+We're done here. Everything worked!
+
+If you're happy with your new project's name you can delete this
+script by running: rm bin/rename-project
+
+Or you can keep it around in case you decide to change your project's
+name later on after developing it for a bit. You can re-run this
+script as many times as you want until you're happy.
+
+Check out the rest of the README on GitHub to wrap things up:
+
+https://github.com/letam/docker-${FIND_FRAMEWORK}-starter#start-and-setup-the-project
+EOF

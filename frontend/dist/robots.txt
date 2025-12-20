@@ -1,0 +1,8 @@
+# Allow all robots to crawl the site
+# Customize this based on your needs
+User-agent: *
+Allow: /
+
+# Disallow specific paths if needed
+# Disallow: /admin/
+# Disallow: /api/

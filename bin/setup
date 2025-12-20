@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "🚀 Django + React Template Setup"
+echo "================================="
+echo ""
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+    echo "❌ Error: Docker is not running"
+    echo "   Please start Docker and try again"
+    exit 1
+fi
+
+# Step 1: Create .env if it doesn't exist
+if [ ! -f .env ]; then
+    echo "📝 Creating .env from .env.example..."
+    cp .env.example .env
+    echo "✅ .env created"
+    echo ""
+else
+    echo "✅ .env already exists"
+    echo ""
+fi
+
+# Step 2: Prompt for project rename (optional)
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Project Naming"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "IMPORTANT: Each clone of this template needs a unique project name"
+echo "to avoid Docker container conflicts."
+echo ""
+echo "Current project name: starter_django_react"
+echo ""
+
+while true; do
+    read -p "Do you want to rename this project now? (y/n): " -r yn
+    case "${yn}" in
+        [Yy]* )
+            echo ""
+            read -p "Enter app name (lowercase, e.g., myapp): " APP_NAME
+            read -p "Enter module name (PascalCase, e.g., MyApp): " MODULE_NAME
+
+            if [ -z "${APP_NAME}" ] || [ -z "${MODULE_NAME}" ]; then
+                echo "❌ Both names are required"
+                continue
+            fi
+
+            echo ""
+            echo "🔄 Renaming project to ${APP_NAME}..."
+            ./bin/rename-project "${APP_NAME}" "${MODULE_NAME}"
+            echo ""
+            break
+            ;;
+        [Nn]* )
+            echo ""
+            echo "⚠️  Skipping rename. You can rename later by running: ./bin/rename-project"
+            echo "   Note: If you're running multiple copies, change COMPOSE_PROJECT_NAME in .env manually"
+            echo ""
+            break
+            ;;
+        * )
+            echo "Please answer y or n"
+            ;;
+    esac
+done
+
+# Step 3: Start Docker services
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Starting Docker Services"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "🐳 Building and starting Docker services (this may take a few minutes)..."
+echo ""
+
+docker compose up --build -d
+
+echo ""
+echo "✅ Services started"
+echo ""
+
+# Step 4: Wait for PostgreSQL to be ready
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Waiting for Database"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "⏳ Waiting for PostgreSQL to be ready..."
+
+MAX_ATTEMPTS=30
+ATTEMPT=0
+
+while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+    if docker compose exec -T postgres pg_isready -U starter_django_react > /dev/null 2>&1; then
+        echo "✅ PostgreSQL is ready"
+        echo ""
+        break
+    fi
+
+    ATTEMPT=$((ATTEMPT + 1))
+    if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+        echo "❌ PostgreSQL failed to start after 30 seconds"
+        echo "   Check logs: docker compose logs postgres"
+        exit 1
+    fi
+
+    sleep 1
+done
+
+# Step 5: Run migrations
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Running Database Migrations"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "📊 Running migrations..."
+echo ""
+
+docker compose exec -T web python manage.py migrate --noinput
+
+echo ""
+echo "✅ Migrations complete"
+echo ""
+
+# Step 6: Success message
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ Setup Complete!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "🌐 Your application is running at:"
+echo "   Frontend:  http://localhost:8000"
+echo "   Admin:     http://localhost:8000/admin"
+echo ""
+echo "👤 Default admin credentials:"
+echo "   Username:  admin"
+echo "   Password:  changeme"
+echo ""
+echo "📝 Useful commands:"
+echo "   View logs:        docker compose logs -f"
+echo "   Stop services:    docker compose down"
+echo "   Restart:          docker compose restart"
+echo "   Shell access:     docker compose exec web bash"
+echo ""
+echo "📚 Next steps:"
+echo "   1. Visit http://localhost:8000 to see your app"
+echo "   2. Check out the README for development workflow"
+echo "   3. Customize your theme in .env (VITE_FRONTEND_THEME)"
+echo ""
+echo "Happy coding! 🎉"
+echo ""

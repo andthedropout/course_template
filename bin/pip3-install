@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -e
+
+# CRITICAL: Install packages system-wide (NO --user flag)
+# Railway requires RAILWAY_RUN_UID=0 (root) for volume write permissions
+# User-local installs (--user) break when running as root because:
+# - As python user: packages go to /home/python/.local/
+# - As root: Python looks in /root/.local/ and can't find them
+# System-wide installs work for ALL users including root
+
+pip3 install --no-warn-script-location --no-cache-dir -r requirements.txt
+
+# If requirements.txt is newer than the lock file or the lock file doesn't exist.
+if [ requirements.txt -nt requirements-lock.txt ]; then
+  pip3 freeze > requirements-lock.txt
+fi
+
+pip3 install --no-warn-script-location --no-cache-dir \
+  -r requirements.txt -c requirements-lock.txt

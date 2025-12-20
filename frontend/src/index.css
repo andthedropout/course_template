@@ -1,0 +1,206 @@
+/* Custom Braveold Bold font */
+@font-face {
+  font-family: 'Braveold';
+  src: url('/fonts/Braveold_Bold.otf') format('opentype');
+  font-weight: bold;
+  font-display: swap;
+}
+
+/* BankGothic font */
+@font-face {
+  font-family: 'BankGothic';
+  src: url('/fonts/BankGothic Md BT.ttf') format('truetype');
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  /* Typography, colors, and theming managed by tweakcn system */
+  color-scheme: light dark;
+
+  /* Font loading optimization */
+  font-display: swap;
+}
+
+/* Universal font loading optimization */
+@font-face {
+  font-display: swap;
+}
+
+/* Prevent FOUT by ensuring fallback fonts are similar */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* Optimize font loading for all text elements */
+h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea {
+  font-display: swap;
+}
+
+/* Link styles now handled in @layer base below */
+
+.App > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@layer components {
+  .container {
+    @apply mx-auto px-4;
+  }
+  
+  @media (min-width: 640px) {
+    .container {
+      @apply px-6;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container {
+      @apply px-8;
+    }
+  }
+  
+  /* Theme-aware hover utilities */
+  .hover-lift {
+    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
+  
+  .hover-primary {
+    @apply hover:bg-primary hover:text-primary-foreground transition-colors duration-200;
+  }
+  
+  .hover-accent {
+    @apply hover:bg-accent hover:text-accent-foreground transition-colors duration-200;
+  }
+  
+  .hover-muted {
+    @apply hover:bg-muted hover:text-muted-foreground transition-colors duration-200;
+  }
+  
+  .hover-fade {
+    @apply hover:opacity-80 transition-opacity duration-200;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    letter-spacing: var(--letter-spacing);
+  }
+
+  /* Apply theme border radius to common elements */
+  .card, [data-card], .rounded, .rounded-md, .rounded-lg, .rounded-xl {
+    border-radius: var(--radius) !important;
+  }
+  
+  /* For shadcn card components */
+  [data-radix-card-root], [class*="card"] {
+    border-radius: var(--radius) !important;
+  }
+  
+  /* Base link styles - let components override as needed */
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Only style links that don't have specific component classes */
+  a:not([class]):hover {
+    color: var(--primary);
+  }
+  
+  /* Specific link variants */
+  .link-muted {
+    color: var(--muted-foreground);
+  }
+  
+  .link-muted:hover {
+    color: var(--foreground);
+  }
+  
+  .link-accent {
+    color: var(--accent-foreground);
+  }
+  
+  .link-accent:hover {
+    color: var(--accent-foreground);
+    opacity: 0.8;
+  }
+  
+  /* Enhanced button hover effects that work with theme variables */
+  button:hover {
+    transform: translateY(-1px);
+  }
+  
+  button:active {
+    transform: translateY(0);
+  }
+  
+  /* Ensure focus rings use theme colors */
+  button:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Lighter placeholders for better UX */
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(var(--muted-foreground) / 0.5);
+    opacity: 1;
+  }
+
+  input::-webkit-input-placeholder,
+  textarea::-webkit-input-placeholder {
+    color: hsl(var(--muted-foreground) / 0.5);
+    opacity: 1;
+  }
+
+  input::-moz-placeholder,
+  textarea::-moz-placeholder {
+    color: hsl(var(--muted-foreground) / 0.5);
+    opacity: 1;
+  }
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 120s linear infinite;
+}

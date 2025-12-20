@@ -1,0 +1,35 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+echo "🚀 Starting production setup..."
+
+# Step 1: Run migrations
+echo "1️⃣ Running database migrations..."
+python manage.py migrate --no-input
+
+# Step 2: Import themes
+echo "2️⃣ Importing themes from design system..."
+python manage.py import_themes --overwrite
+
+# Step 3: Create superuser with site manager permissions  
+echo "3️⃣ Creating master admin user..."
+python manage.py create_superuser_site_manager --username=admin --email=admin@company.com --password=secure123
+
+# Step 4: Collect static files
+echo "4️⃣ Collecting static files..."
+python manage.py collectstatic --no-input
+
+echo "✅ Production setup complete!"
+echo ""
+echo "🔑 Admin Login Credentials:"
+echo "   URL: /admin/"
+echo "   Username: admin"  
+echo "   Password: secure123"
+echo ""
+echo "🎨 Your admin user has Site Manager permissions and can:"
+echo "   • Access Site Admin dashboard"
+echo "   • Use Theme Customizer"
+echo "   • Edit CMS content (on CMS pages)"
+echo "   • Access all admin features" 

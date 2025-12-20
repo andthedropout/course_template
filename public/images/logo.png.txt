@@ -1,0 +1,6 @@
+# Placeholder for logo.png
+# Replace this with your actual logo image at:
+# public/images/logo.png
+
+# For now, the auth pages reference this path.
+# You can use any PNG image (recommended size: 40px height, transparent background)

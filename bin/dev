@@ -1,0 +1,44 @@
+#!/bin/bash
+# Development environment launcher with filtered logs
+# Usage: ./bin/dev [up|down|restart|logs]
+
+set -e
+
+case "${1:-up}" in
+  up)
+    echo "Starting development environment..."
+    docker compose up -d
+    echo ""
+    echo "Services started. Tailing logs (filtered)..."
+    echo "Press Ctrl+C to stop tailing (services will keep running)"
+    echo ""
+    sleep 2
+    # Filter out the annoying TanStack Router warnings
+    docker compose logs -f 2>&1 | grep --line-buffered -v "routeTree.gen.ts was modified by another process"
+    ;;
+
+  down)
+    echo "Stopping development environment..."
+    docker compose down
+    ;;
+
+  restart)
+    echo "Restarting development environment..."
+    docker compose restart
+    ;;
+
+  logs)
+    echo "Tailing logs (filtered)..."
+    docker compose logs -f 2>&1 | grep --line-buffered -v "routeTree.gen.ts was modified by another process"
+    ;;
+
+  *)
+    echo "Usage: $0 [up|down|restart|logs]"
+    echo ""
+    echo "  up       - Start services in background and tail filtered logs (default)"
+    echo "  down     - Stop all services"
+    echo "  restart  - Restart all services"
+    echo "  logs     - Tail filtered logs"
+    exit 1
+    ;;
+esac

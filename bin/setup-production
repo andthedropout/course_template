@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+# Setup production data: Site Managers group and themes
+echo "Setting up production data..."
+
+# Run migrations first
+python manage.py migrate --no-input
+
+# Import themes and setup Site Managers group
+python manage.py setup_production_data
+
+echo "Production setup completed!" 

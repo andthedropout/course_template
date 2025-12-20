@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2122 928" preserveAspectRatio="xMidYMid" width="100%" height="100%" style="shape-rendering: auto; display: block; background: transparent;" xmlns:xlink="http://www.w3.org/1999/xlink"><g><defs>
+  <filter height="190.06" width="4.46" y="-2.23" x="-2.23" filterUnits="userSpaceOnUse" id="f-3owyk7yrcjp">
+    <feGaussianBlur result="blur1" stdDeviation="1"></feGaussianBlur>
+    <feMorphology result="dilate" in="SourceGraphic" radius="0.25" operator="dilate"></feMorphology>
+    <feComponentTransfer result="dark" in="dilate">
+    <feFuncR slope="0.33" type="linear"></feFuncR>
+    <feFuncG slope="0.33" type="linear"></feFuncG>
+    <feFuncB slope="0.33" type="linear"></feFuncB>
+    </feComponentTransfer>
+    <feGaussianBlur result="blur2" in="dark" stdDeviation="0.50"></feGaussianBlur>
+    <feMerge>
+      <feMergeNode in="blur1"></feMergeNode>
+      <feMergeNode in="blur2"></feMergeNode>
+      <feMergeNode in="SourceGraphic"></feMergeNode>
+    </feMerge>
+  </filter>
+</defs><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M75.79 0L75.79 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--secondary)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-20s" keyTimes="0;1" values="75.79 -190.06;75.79 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M151.57 0L151.57 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--muted-foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-6.62s" keyTimes="0;1" values="151.57 -190.06;151.57 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M227.36 0L227.36 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-17.71s" keyTimes="0;1" values="227.36 -190.06;227.36 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M303.14 0L303.14 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--muted-foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-5.80s" keyTimes="0;1" values="303.14 -190.06;303.14 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M378.93 0L378.93 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-11.47s" keyTimes="0;1" values="378.93 -190.06;378.93 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M454.71 0L454.71 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-11.63s" keyTimes="0;1" values="454.71 -190.06;454.71 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M530.50 0L530.50 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-14.01s" keyTimes="0;1" values="530.50 -190.06;530.50 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M606.29 0L606.29 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--secondary)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-11.75s" keyTimes="0;1" values="606.29 -190.06;606.29 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M682.07 0L682.07 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-4.79s" keyTimes="0;1" values="682.07 -190.06;682.07 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M757.86 0L757.86 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--primary)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-4.91s" keyTimes="0;1" values="757.86 -190.06;757.86 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M833.64 0L833.64 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-5.57s" keyTimes="0;1" values="833.64 -190.06;833.64 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M909.43 0L909.43 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-11.54s" keyTimes="0;1" values="909.43 -190.06;909.43 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M985.21 0L985.21 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-7.56s" keyTimes="0;1" values="985.21 -190.06;985.21 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1061 0L1061 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-4.64s" keyTimes="0;1" values="1061 -190.06;1061 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1136.79 0L1136.79 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--muted-foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-13.05s" keyTimes="0;1" values="1136.79 -190.06;1136.79 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1212.57 0L1212.57 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--primary)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-19.12s" keyTimes="0;1" values="1212.57 -190.06;1212.57 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1288.36 0L1288.36 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-9.44s" keyTimes="0;1" values="1288.36 -190.06;1288.36 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1364.14 0L1364.14 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-7.03s" keyTimes="0;1" values="1364.14 -190.06;1364.14 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1439.93 0L1439.93 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--primary)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-23.37s" keyTimes="0;1" values="1439.93 -190.06;1439.93 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1515.71 0L1515.71 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-6.42s" keyTimes="0;1" values="1515.71 -190.06;1515.71 928" repeatCount="indefinite" dur="50s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1591.50 0L1591.50 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-2.58s" keyTimes="0;1" values="1591.50 -190.06;1591.50 928" repeatCount="indefinite" dur="50s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1667.29 0L1667.29 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--primary)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-17.61s" keyTimes="0;1" values="1667.29 -190.06;1667.29 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1743.07 0L1743.07 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-3.66s" keyTimes="0;1" values="1743.07 -190.06;1743.07 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1818.86 0L1818.86 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-14.31s" keyTimes="0;1" values="1818.86 -190.06;1818.86 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1894.64 0L1894.64 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--muted-foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-20.95s" keyTimes="0;1" values="1894.64 -190.06;1894.64 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M1970.43 0L1970.43 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--accent)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-8s" keyTimes="0;1" values="1970.43 -190.06;1970.43 928" repeatCount="indefinite" dur="25s" type="translate" attributeName="transform"></animateTransform>
+</path><path stroke-width="1" stroke="rgba(58, 69, 74, 0.398)" d="M2046.21 0L2046.21 928"></path>
+<path filter="url(#f-3owyk7yrcjp)" fill="var(--muted-foreground)" d="M0 0L-1.23 185.60 A1.23 1.23 0 0 0 1.23 185.60 Z">
+<animateTransform begin="-13.73s" keyTimes="0;1" values="2046.21 -190.06;2046.21 928" repeatCount="indefinite" dur="16.67s" type="translate" attributeName="transform"></animateTransform>
+</path><g></g></g><!-- [ldio] generated by https://loading.io --></svg>
