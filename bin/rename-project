@@ -5,8 +5,8 @@ set -eo pipefail
 APP_NAME="${1}"
 MODULE_NAME="${2}"
 
-FIND_APP_NAME="gagglehomev2"
-FIND_MODULE_NAME="GaggleHomeV2"
+FIND_APP_NAME="coursetemplate"
+FIND_MODULE_NAME="CourseTemplate"
 FIND_FRAMEWORK="django-react"
 
 # Validate arguments are provided

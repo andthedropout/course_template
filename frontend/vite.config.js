@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => ({
 
   server: {
     host: true,
-    port: parseInt(process.env.VITE_PORT || "3000", 10),
+    port: parseInt(process.env.VITE_PORT || "5847", 10),
     watch: {
       usePolling: true,
       interval: 500,  // Increased from 100ms - too aggressive polling can miss changes in Docker
@@ -50,7 +50,7 @@ export default defineConfig(({ mode }) => ({
     },
     hmr: {
       overlay: true,
-      clientPort: 5173,
+      clientPort: parseInt(process.env.VITE_PORT || "5847", 10),
       protocol: 'ws',
     },
     middlewareMode: false,
@@ -59,7 +59,7 @@ export default defineConfig(({ mode }) => ({
     },
     proxy: {
       '/api': {
-        target: 'http://web:8000',
+        target: `http://web:${process.env.PORT || "8847"}`,
         changeOrigin: true,
         secure: false,
         cookieDomainRewrite: {
@@ -67,11 +67,11 @@ export default defineConfig(({ mode }) => ({
         }
       },
       '/admin': {
-        target: 'http://web:8000',
+        target: `http://web:${process.env.PORT || "8847"}`,
         changeOrigin: true,
       },
       '/static': {
-        target: 'http://web:8000',
+        target: `http://web:${process.env.PORT || "8847"}`,
         changeOrigin: true,
       },
     }

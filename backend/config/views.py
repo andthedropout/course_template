@@ -19,6 +19,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["debug"] = settings.DEBUG
+        context["vite_port"] = os.environ.get("VITE_PORT", "5847")
 
         # In production, use hardcoded filenames since Vite is configured without hashes
         # WhiteNoise handles cache busting via STATICFILES_STORAGE with hashed URLs
@@ -26,7 +27,7 @@ class IndexView(TemplateView):
             context["main_js"] = "index.js"
             context["main_css"] = "index.css"
 
-        return context 
+        return context
 
 def list_available_backgrounds(request):
     backgrounds_path = os.path.join(os.path.dirname(settings.BASE_DIR), 'public', 'images', 'backgrounds')

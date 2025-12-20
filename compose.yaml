@@ -121,10 +121,10 @@ services:
     <<: *default-assets
     command: bun dev
     ports:
-      - "5173:5173"  # Vite dev server (TanStack Start uses Vite)
+      - "${VITE_PORT:-5847}:${VITE_PORT:-5847}"  # Vite dev server (TanStack Start uses Vite)
     environment:
-      - DJANGO_API_URL=http://web:8000
-      - VITE_PORT=5173
+      - DJANGO_API_URL=http://web:${PORT:-8847}
+      - VITE_PORT=${VITE_PORT:-5847}
       - DISABLE_ROUTE_GEN=true  # Disable TanStack Router file watching in Docker
 
   # NOTE: css service removed - Vite handles all CSS including Tailwind
