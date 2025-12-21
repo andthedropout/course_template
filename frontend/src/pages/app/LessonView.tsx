@@ -78,7 +78,7 @@ export default function LessonView() {
   }
 
   return (
-    <PageWrapper className="grid gap-6 lg:grid-cols-[1fr,300px]">
+    <PageWrapper className="grid gap-6 lg:grid-cols-[1fr_300px]">
       {/* Main content */}
       <div className="space-y-6">
         {/* Breadcrumb */}

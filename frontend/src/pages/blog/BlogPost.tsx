@@ -101,7 +101,7 @@ export default function BlogPost() {
 
             {/* Content - in Card for readability */}
             <div className="container mx-auto px-4 max-w-4xl">
-              <Card className="bg-card/95 backdrop-blur-sm">
+              <Card className="bg-card/95 backdrop-blur-xs">
                 <CardContent className="pt-8 pb-6 px-8 md:px-12">
                   {/* Title + Metadata at top of content card */}
                   <div className="mb-8 pb-8 border-b">
@@ -164,7 +164,7 @@ export default function BlogPost() {
 
             {/* Tags & Social Share - in Card */}
             <div className="container mx-auto px-4 max-w-4xl mt-8">
-              <Card className="bg-card/95 backdrop-blur-sm">
+              <Card className="bg-card/95 backdrop-blur-xs">
                 <CardContent className="py-6 space-y-6 px-8 md:px-12">
                   {/* Tags */}
                   {post.tags?.length > 0 && (
@@ -340,7 +340,7 @@ export default function BlogPost() {
 
           {/* Content - in Card for readability */}
           <div className="container mx-auto px-4 max-w-4xl">
-            <Card className="bg-card/95 backdrop-blur-sm">
+            <Card className="bg-card/95 backdrop-blur-xs">
               <CardContent className="pt-8 pb-6 px-8 md:px-12">
                 {/* Title + Metadata at top of content card */}
                 <div className="mb-8 pb-8 border-b">
@@ -403,7 +403,7 @@ export default function BlogPost() {
 
           {/* Tags & Social Share - in Card */}
           <div className="container mx-auto px-4 max-w-4xl mt-8">
-            <Card className="bg-card/95 backdrop-blur-sm">
+            <Card className="bg-card/95 backdrop-blur-xs">
               <CardContent className="py-6 space-y-6 px-8 md:px-12">
                 {/* Tags */}
                 {post.tags?.length > 0 && (

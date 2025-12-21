@@ -1,115 +1,345 @@
 /* Custom Braveold Bold font */
-@font-face {
-  font-family: 'Braveold';
-  src: url('/fonts/Braveold_Bold.otf') format('opentype');
-  font-weight: bold;
-  font-display: swap;
+@import 'tailwindcss';
+
+@plugin 'tailwindcss-animate';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+
+
+  --animate-float-slow: float-slow 6s ease-in-out infinite;
+  --animate-float-medium: float-medium 8s ease-in-out infinite;
+  --animate-float-slower: float-slower 10s ease-in-out infinite;
+  --animate-float-slowest: float-slowest 12s ease-in-out infinite;
+  --animate-pulse-slow: pulse-slow 7s ease-in-out infinite;
+  --animate-slide-right: slide-right 15s linear infinite;
+  --animate-slide-left: slide-left 15s linear infinite;
+  --animate-slide-right-slower: slide-right-slower 20s linear infinite;
+  --animate-slide-left-slower: slide-left-slower 20s linear infinite;
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-scroll: scroll var(--animation-duration, 40s)
+    var(--animation-direction, forwards) linear infinite;
+  --animate-typing-dot-bounce: typing-dot-bounce 1.25s ease-out infinite;
+
+  --rotate-15: 15deg;
+
+  --background-image-noise: url('https://www.reactbits.dev/assets/noise.png');
+
+  @keyframes float-slow {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes float-medium {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+  @keyframes float-slower {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+  @keyframes float-slowest {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-25px);
+    }
+  }
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      opacity: 0.2;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.3;
+      transform: scale(1.05);
+    }
+  }
+  @keyframes slide-right {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes slide-left {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes slide-right-slower {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes slide-left-slower {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes scroll {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes typing-dot-bounce {
+    0%,
+    40% {
+      transform: translateY(0);
+    }
+    20% {
+      transform: translateY(-0.25rem);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility container {
+  @apply mx-auto px-4;
+
+  @media (min-width: 640px) {
+    @apply px-6;
+  }
+
+  @media (min-width: 1024px) {
+    @apply px-8;
+  }
+}
+
+@utility hover-lift {
+  /* Theme-aware hover utilities */
+  @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+}
+
+@utility hover-primary {
+  @apply hover:bg-primary hover:text-primary-foreground transition-colors duration-200;
+}
+
+@utility hover-accent {
+  @apply hover:bg-accent hover:text-accent-foreground transition-colors duration-200;
+}
+
+@utility hover-muted {
+  @apply hover:bg-muted hover:text-muted-foreground transition-colors duration-200;
+}
+
+@utility hover-fade {
+  @apply hover:opacity-80 transition-opacity duration-200;
+}
+
+@layer base {
+  @font-face {
+    font-family: 'Braveold';
+    src: url('/fonts/Braveold_Bold.otf') format('opentype');
+    font-weight: bold;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'BankGothic';
+    src: url('/fonts/BankGothic Md BT.ttf') format('truetype');
+    font-display: swap;
+  }
 }
 
 /* BankGothic font */
-@font-face {
-  font-family: 'BankGothic';
-  src: url('/fonts/BankGothic Md BT.ttf') format('truetype');
-  font-display: swap;
-}
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-html {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-
-:root {
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-
-  /* Typography, colors, and theming managed by tweakcn system */
-  color-scheme: light dark;
-
-  /* Font loading optimization */
-  font-display: swap;
-}
-
-/* Universal font loading optimization */
-@font-face {
-  font-display: swap;
-}
-
-/* Prevent FOUT by ensuring fallback fonts are similar */
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  font-feature-settings: "kern" 1, "liga" 1;
-  text-rendering: optimizeLegibility;
-}
-
-/* Optimize font loading for all text elements */
-h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea {
-  font-display: swap;
-}
-
-/* Link styles now handled in @layer base below */
-
-.App > div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@layer components {
-  .container {
-    @apply mx-auto px-4;
+@layer utilities {
+  html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-  
-  @media (min-width: 640px) {
-    .container {
-      @apply px-6;
-    }
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: inherit;
   }
-  
-  @media (min-width: 1024px) {
-    .container {
-      @apply px-8;
-    }
+
+  :root {
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+
+    /* Typography, colors, and theming managed by tweakcn system */
+    color-scheme: light dark;
+
+    /* Font loading optimization */
+    font-display: swap;
   }
-  
-  /* Theme-aware hover utilities */
-  .hover-lift {
-    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+
+  /* Universal font loading optimization */
+  @font-face {
+    font-display: swap;
   }
-  
-  .hover-primary {
-    @apply hover:bg-primary hover:text-primary-foreground transition-colors duration-200;
+
+  /* Prevent FOUT by ensuring fallback fonts are similar */
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1;
+    text-rendering: optimizeLegibility;
   }
-  
-  .hover-accent {
-    @apply hover:bg-accent hover:text-accent-foreground transition-colors duration-200;
+
+  /* Optimize font loading for all text elements */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  div,
+  a,
+  button,
+  input,
+  textarea {
+    font-display: swap;
   }
-  
-  .hover-muted {
-    @apply hover:bg-muted hover:text-muted-foreground transition-colors duration-200;
-  }
-  
-  .hover-fade {
-    @apply hover:opacity-80 transition-opacity duration-200;
+
+  /* Link styles now handled in @layer base below */
+
+  .App > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
@@ -120,51 +350,51 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea {
   .card, [data-card], .rounded, .rounded-md, .rounded-lg, .rounded-xl {
     border-radius: var(--radius) !important;
   }
-  
+
   /* For shadcn card components */
   [data-radix-card-root], [class*="card"] {
     border-radius: var(--radius) !important;
   }
-  
+
   /* Base link styles - let components override as needed */
   a {
     color: inherit;
     text-decoration: none;
     transition: all 0.2s ease-in-out;
   }
-  
+
   /* Only style links that don't have specific component classes */
   a:not([class]):hover {
     color: var(--primary);
   }
-  
+
   /* Specific link variants */
   .link-muted {
     color: var(--muted-foreground);
   }
-  
+
   .link-muted:hover {
     color: var(--foreground);
   }
-  
+
   .link-accent {
     color: var(--accent-foreground);
   }
-  
+
   .link-accent:hover {
     color: var(--accent-foreground);
     opacity: 0.8;
   }
-  
+
   /* Enhanced button hover effects that work with theme variables */
   button:hover {
     transform: translateY(-1px);
   }
-  
+
   button:active {
     transform: translateY(0);
   }
-  
+
   /* Ensure focus rings use theme colors */
   button:focus-visible {
     outline: 2px solid var(--ring);
@@ -174,40 +404,108 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea {
   /* Lighter placeholders for better UX */
   input::placeholder,
   textarea::placeholder {
-    color: hsl(var(--muted-foreground) / 0.5);
+    color: color-mix(in srgb, var(--muted-foreground) 50%, transparent);
     opacity: 1;
   }
 
   input::-webkit-input-placeholder,
   textarea::-webkit-input-placeholder {
-    color: hsl(var(--muted-foreground) / 0.5);
+    color: color-mix(in srgb, var(--muted-foreground) 50%, transparent);
     opacity: 1;
   }
 
   input::-moz-placeholder,
   textarea::-moz-placeholder {
-    color: hsl(var(--muted-foreground) / 0.5);
+    color: color-mix(in srgb, var(--muted-foreground) 50%, transparent);
     opacity: 1;
   }
   :root {
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Claude Theme - Light */
+    --background: oklch(0.9818 0.0054 95.0986);
+    --foreground: oklch(0.3438 0.0269 95.7226);
+    --card: oklch(0.9818 0.0054 95.0986);
+    --card-foreground: oklch(0.1908 0.0020 106.5859);
+    --popover: oklch(1.0000 0 0);
+    --popover-foreground: oklch(0.2671 0.0196 98.9390);
+    --primary: oklch(0.6171 0.1375 39.0427);
+    --primary-foreground: oklch(1.0000 0 0);
+    --secondary: oklch(0.9245 0.0138 92.9892);
+    --secondary-foreground: oklch(0.4334 0.0177 98.6048);
+    --muted: oklch(0.9341 0.0153 90.2390);
+    --muted-foreground: oklch(0.6059 0.0075 97.4233);
+    --accent: oklch(0.9245 0.0138 92.9892);
+    --accent-foreground: oklch(0.2671 0.0196 98.9390);
+    --destructive: oklch(0.1908 0.0020 106.5859);
+    --destructive-foreground: oklch(1.0000 0 0);
+    --border: oklch(0.8847 0.0069 97.3627);
+    --input: oklch(0.7621 0.0156 98.3528);
+    --ring: oklch(0.5937 0.1673 253.0630);
+    --chart-1: oklch(0.5583 0.1276 42.9956);
+    --chart-2: oklch(0.6898 0.1581 290.4107);
+    --chart-3: oklch(0.8816 0.0276 93.1280);
+    --chart-4: oklch(0.8822 0.0403 298.1792);
+    --chart-5: oklch(0.5608 0.1348 42.0584);
+    --sidebar: oklch(0.9663 0.0080 98.8792);
+    --sidebar-foreground: oklch(0.3590 0.0051 106.6524);
+    --sidebar-primary: oklch(0.6171 0.1375 39.0427);
+    --sidebar-primary-foreground: oklch(0.9881 0 0);
+    --sidebar-accent: oklch(0.9245 0.0138 92.9892);
+    --sidebar-accent-foreground: oklch(0.3250 0 0);
+    --sidebar-border: oklch(0.9401 0 0);
+    --sidebar-ring: oklch(0.7731 0 0);
+    --radius: 0.5rem;
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
+    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
+    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    --letter-spacing: 0em;
   }
   .dark {
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Claude Theme - Dark */
+    --background: oklch(0.2679 0.0036 106.6427);
+    --foreground: oklch(0.8074 0.0142 93.0137);
+    --card: oklch(0.2679 0.0036 106.6427);
+    --card-foreground: oklch(0.9818 0.0054 95.0986);
+    --popover: oklch(0.3085 0.0035 106.6039);
+    --popover-foreground: oklch(0.9211 0.0040 106.4781);
+    --primary: oklch(0.6724 0.1308 38.7559);
+    --primary-foreground: oklch(1.0000 0 0);
+    --secondary: oklch(0.9818 0.0054 95.0986);
+    --secondary-foreground: oklch(0.3085 0.0035 106.6039);
+    --muted: oklch(0.2213 0.0038 106.7070);
+    --muted-foreground: oklch(0.7713 0.0169 99.0657);
+    --accent: oklch(0.2130 0.0078 95.4245);
+    --accent-foreground: oklch(0.9663 0.0080 98.8792);
+    --destructive: oklch(0.6368 0.2078 25.3313);
+    --destructive-foreground: oklch(1.0000 0 0);
+    --border: oklch(0.3618 0.0101 106.8928);
+    --input: oklch(0.4336 0.0113 100.2195);
+    --ring: oklch(0.5937 0.1673 253.0630);
+    --chart-1: oklch(0.5583 0.1276 42.9956);
+    --chart-2: oklch(0.6898 0.1581 290.4107);
+    --chart-3: oklch(0.2130 0.0078 95.4245);
+    --chart-4: oklch(0.3074 0.0516 289.3230);
+    --chart-5: oklch(0.5608 0.1348 42.0584);
+    --sidebar: oklch(0.2357 0.0024 67.7077);
+    --sidebar-foreground: oklch(0.8074 0.0142 93.0137);
+    --sidebar-primary: oklch(0.3250 0 0);
+    --sidebar-primary-foreground: oklch(0.9881 0 0);
+    --sidebar-accent: oklch(0.1680 0.0020 106.6177);
+    --sidebar-accent-foreground: oklch(0.8074 0.0142 93.0137);
+    --sidebar-border: oklch(0.9401 0 0);
+    --sidebar-ring: oklch(0.7731 0 0);
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
+    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
+    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
   }
 }
 

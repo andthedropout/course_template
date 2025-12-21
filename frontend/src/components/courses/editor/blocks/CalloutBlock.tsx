@@ -117,7 +117,7 @@ function CalloutPreview({ data }: { data: CalloutBlockData }) {
   return (
     <div className={cn('rounded-lg border p-4', config.className)}>
       <div className="flex gap-3">
-        <Icon name={config.icon} className="h-5 w-5 mt-0.5 flex-shrink-0" />
+        <Icon name={config.icon} className="h-5 w-5 mt-0.5 shrink-0" />
         <div className="flex-1">
           {data.title && <p className="font-semibold mb-1">{data.title}</p>}
           <p className="text-sm">{data.content || 'No content'}</p>

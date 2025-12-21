@@ -55,7 +55,7 @@ export function OrderSummary({ items, totalPrice, currency }: OrderSummaryProps)
         <input
           type="text"
           placeholder="Discount code"
-          className="flex-1 h-10 px-3 text-sm border border-border rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="flex-1 h-10 px-3 text-sm border border-border rounded-md bg-transparent focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2"
         />
         <button
           type="button"

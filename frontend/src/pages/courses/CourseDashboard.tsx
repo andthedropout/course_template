@@ -194,7 +194,7 @@ export default function CourseDashboard() {
                       />
                     </div>
                   ) : (
-                    <div className="aspect-video w-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+                    <div className="aspect-video w-full bg-linear-to-br from-muted to-muted/50 flex items-center justify-center">
                       <Icon name="BookOpen" className="h-12 w-12 text-muted-foreground/30" />
                     </div>
                   )}
@@ -214,7 +214,7 @@ export default function CourseDashboard() {
                         {course.status}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4 min-h-[2.5rem]">
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4 min-h-10">
                       {course.description || 'No description'}
                     </p>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground border-t pt-3">

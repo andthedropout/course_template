@@ -153,7 +153,7 @@ export default function BlogList() {
           <div className="flex flex-wrap gap-2 justify-center">
             {/* Category Pills */}
             <Button
-              variant={selectedCategory === '' ? 'default' : 'outline'}
+              variant={selectedCategory === '' ? 'default' : 'outline-solid'}
               size="sm"
               onClick={() => setSelectedCategory('')}
             >
@@ -162,7 +162,7 @@ export default function BlogList() {
             {categories.map(cat => (
               <Button
                 key={cat.slug}
-                variant={selectedCategory === cat.slug ? 'default' : 'outline'}
+                variant={selectedCategory === cat.slug ? 'default' : 'outline-solid'}
                 size="sm"
                 onClick={() => setSelectedCategory(cat.slug)}
               >
@@ -177,7 +177,7 @@ export default function BlogList() {
             {tags.map(tag => (
               <Button
                 key={tag.slug}
-                variant={selectedTag === tag.slug ? 'default' : 'outline'}
+                variant={selectedTag === tag.slug ? 'default' : 'outline-solid'}
                 size="sm"
                 onClick={() => setSelectedTag(tag.slug)}
               >

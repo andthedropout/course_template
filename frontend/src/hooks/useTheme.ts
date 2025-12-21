@@ -243,15 +243,9 @@ export const useTheme = () => {
     }
     
     // Generate CSS for both light and dark modes
-    // For OKLCH colors, we need to set the variable without the oklch() wrapper
-    // so Tailwind can add opacity modifiers
+    // Tailwind v4 uses oklch colors directly - no need to strip the wrapper
     const processColorValue = (value: string): string => {
-      // If it's an oklch color like "oklch(0.6231 0.1880 259.8145)"
-      // Extract just the values: "0.6231 0.1880 259.8145"
-      const oklchMatch = value.match(/oklch\(([^)]+)\)/);
-      if (oklchMatch) {
-        return oklchMatch[1];
-      }
+      // Return the value as-is - Tailwind v4 handles oklch() colors natively
       return value;
     };
 

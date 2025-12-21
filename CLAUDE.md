@@ -37,3 +37,29 @@ docker compose restart web
 # Frontend dev
 cd frontend && bun dev
 ```
+
+## Dev Server Management
+
+**ALWAYS kill existing dev servers before starting a new one.** Port conflicts cause ERR_CONNECTION_RESET errors.
+
+```bash
+# Kill stale vite/bun processes before starting dev server
+pkill -f "vite" 2>/dev/null; pkill -f "bun.*dev" 2>/dev/null
+
+# Then start fresh
+cd frontend && bun dev
+```
+
+If the user reports connection errors (ERR_CONNECTION_RESET, wrong port), kill all processes and restart.
+
+## Tailwind CSS v4 Notes
+
+This project uses **Tailwind CSS v4** which has syntax changes from v3:
+
+- **CSS variable references**: Use parentheses `()` not brackets `[]`
+  - Old (v3): `w-[--sidebar-width]`, `bg-[--my-color]`
+  - New (v4): `w-(--sidebar-width)`, `bg-(--my-color)`
+
+- **Color format**: Theme colors use `oklch()` format in CSS variables
+
+- **Config location**: Theme config is in `src/index.css` using `@theme inline` block, not `tailwind.config.js`

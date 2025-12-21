@@ -340,7 +340,7 @@ export function SeoAnalysis({
                   <div key={index} className="flex items-start gap-2 text-sm">
                     <Icon
                       name={getRatingIcon(result.rating) as any}
-                      className={`h-4 w-4 mt-0.5 flex-shrink-0 ${getRatingColor(result.rating)}`}
+                      className={`h-4 w-4 mt-0.5 shrink-0 ${getRatingColor(result.rating)}`}
                     />
                     <div
                       className="flex-1 text-foreground/80"
@@ -365,7 +365,7 @@ export function SeoAnalysis({
                   <div key={index} className="flex items-start gap-2 text-sm">
                     <Icon
                       name={getRatingIcon(result.rating) as any}
-                      className={`h-4 w-4 mt-0.5 flex-shrink-0 ${getRatingColor(result.rating)}`}
+                      className={`h-4 w-4 mt-0.5 shrink-0 ${getRatingColor(result.rating)}`}
                     />
                     <div
                       className="flex-1 text-foreground/80"

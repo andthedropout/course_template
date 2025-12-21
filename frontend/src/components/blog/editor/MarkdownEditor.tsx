@@ -101,7 +101,7 @@ export function MarkdownEditor({ value, onChange, onImageUpload }: MarkdownEdito
       <div className="flex gap-2 mb-2">
         <Button
           type="button"
-          variant={viewMode === 'markdown' ? 'default' : 'outline'}
+          variant={viewMode === 'markdown' ? 'default' : 'outline-solid'}
           size="sm"
           onClick={() => setViewMode('markdown')}
         >
@@ -110,7 +110,7 @@ export function MarkdownEditor({ value, onChange, onImageUpload }: MarkdownEdito
         </Button>
         <Button
           type="button"
-          variant={viewMode === 'preview' ? 'default' : 'outline'}
+          variant={viewMode === 'preview' ? 'default' : 'outline-solid'}
           size="sm"
           onClick={() => setViewMode('preview')}
         >
@@ -119,7 +119,7 @@ export function MarkdownEditor({ value, onChange, onImageUpload }: MarkdownEdito
         </Button>
         <Button
           type="button"
-          variant={viewMode === 'code' ? 'default' : 'outline'}
+          variant={viewMode === 'code' ? 'default' : 'outline-solid'}
           size="sm"
           onClick={() => setViewMode('code')}
         >
@@ -133,7 +133,7 @@ export function MarkdownEditor({ value, onChange, onImageUpload }: MarkdownEdito
           <textarea
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full h-[600px] p-4 font-mono text-sm bg-background resize-none focus:outline-none"
+            className="w-full h-[600px] p-4 font-mono text-sm bg-background resize-none focus:outline-hidden"
             placeholder="Write your content in markdown or HTML..."
           />
         </div>

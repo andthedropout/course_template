@@ -688,7 +688,7 @@ export default function BlogEditor({ slug, initialData }: BlogEditorProps) {
                   </Button>
                 )}
                 <Button
-                  variant={status === 'published' ? 'default' : 'outline'}
+                  variant={status === 'published' ? 'default' : 'outline-solid'}
                   className="flex-1"
                   onClick={() => handleSave()}
                   disabled={isSaving || (!isDirty && status === savedStatus)}
@@ -1024,7 +1024,7 @@ export default function BlogEditor({ slug, initialData }: BlogEditorProps) {
 
                               {/* Content Card Preview */}
                               <div className="container mx-auto px-4 max-w-4xl">
-                                <div className="bg-card/95 backdrop-blur-sm rounded-lg p-8 mb-8">
+                                <div className="bg-card/95 backdrop-blur-xs rounded-lg p-8 mb-8">
                                   <div className="flex items-center gap-3 text-sm text-muted-foreground mb-6">
                                     <span>By admin</span>
                                     <span>•</span>
@@ -1046,7 +1046,7 @@ export default function BlogEditor({ slug, initialData }: BlogEditorProps) {
                                   )}
                                 </div>
                                 {/* Tags/Social Card */}
-                                <div className="bg-card/95 backdrop-blur-sm rounded-lg p-6">
+                                <div className="bg-card/95 backdrop-blur-xs rounded-lg p-6">
                                   <div className="h-3 bg-muted/50 rounded w-1/3"></div>
                                 </div>
                               </div>

@@ -303,7 +303,7 @@ export default function Checkout() {
         type="website"
       />
 
-      <div className="grid lg:grid-cols-[1fr,1fr]">
+      <div className="grid lg:grid-cols-[1fr_1fr]">
         {/* Left Column - Checkout Form */}
         <div className="flex justify-end px-4 sm:px-6 lg:px-12 py-8 lg:py-12">
           <div className="w-full max-w-[540px]">
@@ -665,7 +665,7 @@ function CheckoutFormContent({
             <select
               value={country}
               onChange={(e) => setCountry(e.target.value)}
-              className="w-full h-12 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full h-12 px-3 rounded-md border border-input bg-background text-sm focus:outline-hidden focus:ring-2 focus:ring-ring"
               required
             >
               <option value="US">United States</option>

@@ -13,7 +13,7 @@ import { FilePreview } from "@/components/ui/file-preview"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 
 const chatBubbleVariants = cva(
-  "group/message relative break-words rounded-lg p-3 text-sm sm:max-w-[70%]",
+  "group/message relative wrap-break-word rounded-lg p-3 text-sm sm:max-w-[70%]",
   {
     variants: {
       isUser: {
