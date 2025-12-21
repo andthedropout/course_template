@@ -1,7 +1,12 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import UserAddressViewSet
 
 app_name = 'users'
 
+router = DefaultRouter()
+router.register('addresses', UserAddressViewSet, basename='address')
+
 urlpatterns = [
-    # User URL patterns will be added here as needed
+    path('', include(router.urls)),
 ]

@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icon } from '@/components/ui/icon';
+import PageWrapper from '@/components/layout/PageWrapper';
 
 export default function Settings() {
   const { user } = useAuth();
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <PageWrapper className="space-y-6 max-w-2xl">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground mt-2">
@@ -111,6 +112,6 @@ export default function Settings() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </PageWrapper>
   );
 }

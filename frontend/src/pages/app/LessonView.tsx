@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { cn } from '@/lib/utils';
+import PageWrapper from '@/components/layout/PageWrapper';
 
 export default function LessonView() {
   const { slug, lessonSlug } = useParams({ from: '/app/courses/$slug/$lessonSlug' });
@@ -77,7 +78,7 @@ export default function LessonView() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr,300px]">
+    <PageWrapper className="grid gap-6 lg:grid-cols-[1fr,300px]">
       {/* Main content */}
       <div className="space-y-6">
         {/* Breadcrumb */}
@@ -197,6 +198,6 @@ export default function LessonView() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

@@ -21,12 +21,15 @@ import { Route as StoreIndexRouteImport } from './routes/store.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as StoreSlugRouteImport } from './routes/store.$slug'
+import { Route as CoursesDashboardRouteImport } from './routes/courses.dashboard'
 import { Route as BlogNewRouteImport } from './routes/blog.new'
 import { Route as BlogDashboardRouteImport } from './routes/blog.dashboard'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
 import { Route as AppCoursesRouteImport } from './routes/app.courses'
+import { Route as CoursesSlugIndexRouteImport } from './routes/courses.$slug.index'
+import { Route as CoursesSlugLessonSlugRouteImport } from './routes/courses.$slug.$lessonSlug'
 import { Route as BlogTagSlugRouteImport } from './routes/blog.tag.$slug'
 import { Route as BlogEditSlugRouteImport } from './routes/blog.edit.$slug'
 import { Route as BlogCategorySlugRouteImport } from './routes/blog.category.$slug'
@@ -93,6 +96,11 @@ const StoreSlugRoute = StoreSlugRouteImport.update({
   path: '/store/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoursesDashboardRoute = CoursesDashboardRouteImport.update({
+  id: '/courses/dashboard',
+  path: '/courses/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogNewRoute = BlogNewRouteImport.update({
   id: '/blog/new',
   path: '/blog/new',
@@ -122,6 +130,16 @@ const AppCoursesRoute = AppCoursesRouteImport.update({
   id: '/courses',
   path: '/courses',
   getParentRoute: () => AppRoute,
+} as any)
+const CoursesSlugIndexRoute = CoursesSlugIndexRouteImport.update({
+  id: '/courses/$slug/',
+  path: '/courses/$slug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesSlugLessonSlugRoute = CoursesSlugLessonSlugRouteImport.update({
+  id: '/courses/$slug/$lessonSlug',
+  path: '/courses/$slug/$lessonSlug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BlogTagSlugRoute = BlogTagSlugRouteImport.update({
   id: '/blog/tag/$slug',
@@ -165,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/dashboard': typeof BlogDashboardRoute
   '/blog/new': typeof BlogNewRoute
+  '/courses/dashboard': typeof CoursesDashboardRoute
   '/store/$slug': typeof StoreSlugRoute
   '/app/': typeof AppIndexRoute
   '/blog': typeof BlogIndexRoute
@@ -173,6 +192,8 @@ export interface FileRoutesByFullPath {
   '/blog/category/$slug': typeof BlogCategorySlugRoute
   '/blog/edit/$slug': typeof BlogEditSlugRoute
   '/blog/tag/$slug': typeof BlogTagSlugRoute
+  '/courses/$slug/$lessonSlug': typeof CoursesSlugLessonSlugRoute
+  '/courses/$slug': typeof CoursesSlugIndexRoute
   '/app/courses/$slug/$lessonSlug': typeof AppCoursesSlugLessonSlugRoute
 }
 export interface FileRoutesByTo {
@@ -189,6 +210,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/dashboard': typeof BlogDashboardRoute
   '/blog/new': typeof BlogNewRoute
+  '/courses/dashboard': typeof CoursesDashboardRoute
   '/store/$slug': typeof StoreSlugRoute
   '/app': typeof AppIndexRoute
   '/blog': typeof BlogIndexRoute
@@ -197,6 +219,8 @@ export interface FileRoutesByTo {
   '/blog/category/$slug': typeof BlogCategorySlugRoute
   '/blog/edit/$slug': typeof BlogEditSlugRoute
   '/blog/tag/$slug': typeof BlogTagSlugRoute
+  '/courses/$slug/$lessonSlug': typeof CoursesSlugLessonSlugRoute
+  '/courses/$slug': typeof CoursesSlugIndexRoute
   '/app/courses/$slug/$lessonSlug': typeof AppCoursesSlugLessonSlugRoute
 }
 export interface FileRoutesById {
@@ -215,6 +239,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/dashboard': typeof BlogDashboardRoute
   '/blog/new': typeof BlogNewRoute
+  '/courses/dashboard': typeof CoursesDashboardRoute
   '/store/$slug': typeof StoreSlugRoute
   '/app/': typeof AppIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -223,6 +248,8 @@ export interface FileRoutesById {
   '/blog/category/$slug': typeof BlogCategorySlugRoute
   '/blog/edit/$slug': typeof BlogEditSlugRoute
   '/blog/tag/$slug': typeof BlogTagSlugRoute
+  '/courses/$slug/$lessonSlug': typeof CoursesSlugLessonSlugRoute
+  '/courses/$slug/': typeof CoursesSlugIndexRoute
   '/app/courses/$slug/$lessonSlug': typeof AppCoursesSlugLessonSlugRoute
 }
 export interface FileRouteTypes {
@@ -242,6 +269,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/blog/dashboard'
     | '/blog/new'
+    | '/courses/dashboard'
     | '/store/$slug'
     | '/app/'
     | '/blog'
@@ -250,6 +278,8 @@ export interface FileRouteTypes {
     | '/blog/category/$slug'
     | '/blog/edit/$slug'
     | '/blog/tag/$slug'
+    | '/courses/$slug/$lessonSlug'
+    | '/courses/$slug'
     | '/app/courses/$slug/$lessonSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -266,6 +296,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/blog/dashboard'
     | '/blog/new'
+    | '/courses/dashboard'
     | '/store/$slug'
     | '/app'
     | '/blog'
@@ -274,6 +305,8 @@ export interface FileRouteTypes {
     | '/blog/category/$slug'
     | '/blog/edit/$slug'
     | '/blog/tag/$slug'
+    | '/courses/$slug/$lessonSlug'
+    | '/courses/$slug'
     | '/app/courses/$slug/$lessonSlug'
   id:
     | '__root__'
@@ -291,6 +324,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/blog/dashboard'
     | '/blog/new'
+    | '/courses/dashboard'
     | '/store/$slug'
     | '/app/'
     | '/blog/'
@@ -299,6 +333,8 @@ export interface FileRouteTypes {
     | '/blog/category/$slug'
     | '/blog/edit/$slug'
     | '/blog/tag/$slug'
+    | '/courses/$slug/$lessonSlug'
+    | '/courses/$slug/'
     | '/app/courses/$slug/$lessonSlug'
   fileRoutesById: FileRoutesById
 }
@@ -314,12 +350,15 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   BlogDashboardRoute: typeof BlogDashboardRoute
   BlogNewRoute: typeof BlogNewRoute
+  CoursesDashboardRoute: typeof CoursesDashboardRoute
   StoreSlugRoute: typeof StoreSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   StoreIndexRoute: typeof StoreIndexRoute
   BlogCategorySlugRoute: typeof BlogCategorySlugRoute
   BlogEditSlugRoute: typeof BlogEditSlugRoute
   BlogTagSlugRoute: typeof BlogTagSlugRoute
+  CoursesSlugLessonSlugRoute: typeof CoursesSlugLessonSlugRoute
+  CoursesSlugIndexRoute: typeof CoursesSlugIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -408,6 +447,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoreSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/courses/dashboard': {
+      id: '/courses/dashboard'
+      path: '/courses/dashboard'
+      fullPath: '/courses/dashboard'
+      preLoaderRoute: typeof CoursesDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/new': {
       id: '/blog/new'
       path: '/blog/new'
@@ -449,6 +495,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/courses'
       preLoaderRoute: typeof AppCoursesRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/courses/$slug/': {
+      id: '/courses/$slug/'
+      path: '/courses/$slug'
+      fullPath: '/courses/$slug'
+      preLoaderRoute: typeof CoursesSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/$slug/$lessonSlug': {
+      id: '/courses/$slug/$lessonSlug'
+      path: '/courses/$slug/$lessonSlug'
+      fullPath: '/courses/$slug/$lessonSlug'
+      preLoaderRoute: typeof CoursesSlugLessonSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/blog/tag/$slug': {
       id: '/blog/tag/$slug'
@@ -540,22 +600,16 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   BlogDashboardRoute: BlogDashboardRoute,
   BlogNewRoute: BlogNewRoute,
+  CoursesDashboardRoute: CoursesDashboardRoute,
   StoreSlugRoute: StoreSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   StoreIndexRoute: StoreIndexRoute,
   BlogCategorySlugRoute: BlogCategorySlugRoute,
   BlogEditSlugRoute: BlogEditSlugRoute,
   BlogTagSlugRoute: BlogTagSlugRoute,
+  CoursesSlugLessonSlugRoute: CoursesSlugLessonSlugRoute,
+  CoursesSlugIndexRoute: CoursesSlugIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

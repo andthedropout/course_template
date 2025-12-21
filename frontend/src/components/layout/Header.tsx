@@ -36,12 +36,20 @@ export function Header() {
             </Link>
           )}
           {user?.is_staff && (
-            <Link
-              to="/blog/dashboard"
-              className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
-            >
-              CMS Dashboard
-            </Link>
+            <>
+              <Link
+                to="/blog/dashboard"
+                className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+              >
+                Blog CMS
+              </Link>
+              <Link
+                to="/courses/dashboard"
+                className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+              >
+                Course Builder
+              </Link>
+            </>
           )}
         </div>
 

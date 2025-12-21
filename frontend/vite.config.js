@@ -5,6 +5,15 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Handle Node.js modules used by @gravity-ui/markdown-editor
+  optimizeDeps: {
+    include: ['lodash', 'lodash/**'],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
+  },
   // Load env from root directory instead of frontend/
   envDir: '../',
   publicDir: '../public',  // Use root public folder, not frontend/public
@@ -107,6 +116,12 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // Provide empty shims for Node.js modules used by postcss/sanitize-html
+      // These are only used for source maps which we don't need in browser
+      'source-map-js': path.resolve(__dirname, './src/shims/empty.js'),
+      'path': path.resolve(__dirname, './src/shims/path.js'),
+      'fs': path.resolve(__dirname, './src/shims/empty.js'),
+      'url': path.resolve(__dirname, './src/shims/url.js'),
     },
   },
 }))

@@ -1,5 +1,5 @@
 import { Link, useLocation } from '@tanstack/react-router';
-import { LayoutDashboard, BookOpen, Settings, LogOut, GraduationCap, Store, ChevronsUpDown, PenSquare, Newspaper } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Settings, LogOut, GraduationCap, Store, ChevronsUpDown, PenSquare, Newspaper, Layers } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -25,7 +25,6 @@ import { useAuth } from '@/hooks/useAuth';
 const navItems = [
   { label: 'Dashboard', href: '/app/dashboard', icon: LayoutDashboard },
   { label: 'My Courses', href: '/app/courses', icon: BookOpen },
-  { label: 'Settings', href: '/app/settings', icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -79,7 +78,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Browse Store">
+                <SidebarMenuButton asChild tooltip="Browse Store" isActive={location.pathname.startsWith('/store')}>
                   <Link to="/store">
                     <Store />
                     <span>Browse Store</span>
@@ -87,7 +86,7 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Blog">
+                <SidebarMenuButton asChild tooltip="Blog" isActive={location.pathname === '/blog' || (location.pathname.startsWith('/blog') && !location.pathname.startsWith('/blog/dashboard'))}>
                   <Link to="/blog">
                     <Newspaper />
                     <span>Blog</span>
@@ -103,10 +102,18 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="CMS Dashboard">
+                  <SidebarMenuButton asChild tooltip="Blog CMS" isActive={location.pathname.startsWith('/blog/dashboard')}>
                     <Link to="/blog/dashboard">
                       <PenSquare />
-                      <span>CMS Dashboard</span>
+                      <span>Blog CMS</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Course Builder" isActive={location.pathname.startsWith('/courses')}>
+                    <Link to="/courses/dashboard">
+                      <Layers />
+                      <span>Course Builder</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

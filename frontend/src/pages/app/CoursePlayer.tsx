@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { cn } from '@/lib/utils';
+import PageWrapper from '@/components/layout/PageWrapper';
 import {
   Accordion,
   AccordionContent,
@@ -66,7 +67,7 @@ export default function CoursePlayer() {
   const firstLesson = structure.modules[0]?.lessons[0];
 
   return (
-    <div className="space-y-6">
+    <PageWrapper className="space-y-6">
       {/* Course header */}
       <div className="flex items-start justify-between">
         <div>
@@ -140,6 +141,6 @@ export default function CoursePlayer() {
           </Accordion>
         </CardContent>
       </Card>
-    </div>
+    </PageWrapper>
   );
 }

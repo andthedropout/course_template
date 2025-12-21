@@ -5,6 +5,7 @@ import { fetchMyEnrollments, type Enrollment } from '@/api/courses';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import PageWrapper from '@/components/layout/PageWrapper';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -27,7 +28,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="space-y-8">
+    <PageWrapper className="space-y-8">
       {/* Welcome section */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
@@ -130,6 +131,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-    </div>
+    </PageWrapper>
   );
 }

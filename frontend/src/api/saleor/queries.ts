@@ -84,6 +84,31 @@ export interface CheckoutResponse {
   checkout: Checkout | null;
 }
 
+// Stored payment methods types
+export interface StoredPaymentMethod {
+  id: string;
+  type: string;
+  name?: string;
+  data?: {
+    brand?: string;
+    lastDigits?: string;
+    expMonth?: number;
+    expYear?: number;
+  };
+}
+
+export interface CheckoutStoredPaymentMethodsResponse {
+  checkout: {
+    storedPaymentMethods: StoredPaymentMethod[];
+  } | null;
+}
+
+export interface UserStoredPaymentMethodsResponse {
+  me: {
+    storedPaymentMethods: StoredPaymentMethod[];
+  } | null;
+}
+
 // Queries
 const PRODUCTS_QUERY = `
   query Products($channel: String!, $first: Int) {
@@ -189,6 +214,33 @@ const CHECKOUT_QUERY = `
   }
 `;
 
+// Stored payment methods queries
+const CHECKOUT_STORED_PAYMENT_METHODS_QUERY = `
+  query CheckoutStoredPaymentMethods($id: ID!, $channel: String!) {
+    checkout(id: $id) {
+      storedPaymentMethods(channel: $channel) {
+        id
+        type
+        name
+        data
+      }
+    }
+  }
+`;
+
+const USER_STORED_PAYMENT_METHODS_QUERY = `
+  query UserStoredPaymentMethods($channel: String!) {
+    me {
+      storedPaymentMethods(channel: $channel) {
+        id
+        type
+        name
+        data
+      }
+    }
+  }
+`;
+
 // Query functions
 export async function fetchProducts(first: number = 100): Promise<Product[]> {
   const data = await query<ProductsResponse>(PRODUCTS_QUERY, {
@@ -209,4 +261,35 @@ export async function fetchProduct(slug: string): Promise<Product | null> {
 export async function fetchCheckout(id: string): Promise<Checkout | null> {
   const data = await query<CheckoutResponse>(CHECKOUT_QUERY, { id });
   return data.checkout;
+}
+
+/**
+ * Fetch stored payment methods for a checkout.
+ * These are cards saved by the customer for future use.
+ */
+export async function fetchCheckoutStoredPaymentMethods(
+  checkoutId: string
+): Promise<StoredPaymentMethod[]> {
+  const data = await query<CheckoutStoredPaymentMethodsResponse>(
+    CHECKOUT_STORED_PAYMENT_METHODS_QUERY,
+    {
+      id: checkoutId,
+      channel: DEFAULT_CHANNEL,
+    }
+  );
+  return data.checkout?.storedPaymentMethods || [];
+}
+
+/**
+ * Fetch stored payment methods for the current user.
+ * Requires the user to be authenticated with Saleor.
+ */
+export async function fetchUserStoredPaymentMethods(): Promise<StoredPaymentMethod[]> {
+  const data = await query<UserStoredPaymentMethodsResponse>(
+    USER_STORED_PAYMENT_METHODS_QUERY,
+    {
+      channel: DEFAULT_CHANNEL,
+    }
+  );
+  return data.me?.storedPaymentMethods || [];
 }

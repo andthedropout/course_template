@@ -3,25 +3,42 @@ from .models import Course, Module, Lesson, Enrollment
 
 
 class LessonSerializer(serializers.ModelSerializer):
-    """Serializer for lesson data."""
+    """Serializer for lesson data (read)."""
 
     class Meta:
         model = Lesson
         fields = [
-            'id', 'title', 'slug', 'content', 'video_url',
+            'id', 'title', 'slug', 'content', 'blocks', 'video_url',
             'duration_minutes', 'order', 'is_free_preview'
         ]
 
 
 class LessonListSerializer(serializers.ModelSerializer):
     """Lighter serializer for lesson list (no full content)."""
+    has_video = serializers.SerializerMethodField()
 
     class Meta:
         model = Lesson
         fields = [
             'id', 'title', 'slug', 'duration_minutes',
-            'order', 'is_free_preview'
+            'order', 'is_free_preview', 'has_video'
         ]
+
+    def get_has_video(self, obj):
+        return bool(obj.video_url)
+
+
+class LessonWriteSerializer(serializers.ModelSerializer):
+    """Serializer for creating/updating lessons (staff only)."""
+    slug = serializers.SlugField(required=False, allow_blank=True)
+
+    class Meta:
+        model = Lesson
+        fields = [
+            'id', 'title', 'slug', 'blocks', 'video_url',
+            'duration_minutes', 'order', 'is_free_preview'
+        ]
+        read_only_fields = ['id']
 
 
 class ModuleSerializer(serializers.ModelSerializer):
@@ -74,3 +91,58 @@ class EnrollmentCheckSerializer(serializers.Serializer):
     """Simple serializer to check if user is enrolled."""
     is_enrolled = serializers.BooleanField()
     course_slug = serializers.CharField()
+
+
+# ============ Staff Write Serializers ============
+
+class ModuleWriteSerializer(serializers.ModelSerializer):
+    """Serializer for creating/updating modules (staff only)."""
+
+    class Meta:
+        model = Module
+        fields = ['id', 'title', 'description', 'order']
+        read_only_fields = ['id']
+
+
+class CourseWriteSerializer(serializers.ModelSerializer):
+    """Serializer for creating/updating courses (staff only)."""
+
+    class Meta:
+        model = Course
+        fields = [
+            'id', 'title', 'slug', 'description', 'thumbnail_url',
+            'saleor_product_id', 'status'
+        ]
+        read_only_fields = ['id']
+
+
+class CourseFullSerializer(serializers.ModelSerializer):
+    """Full course serializer for CMS (includes all fields + nested data)."""
+    modules = ModuleSerializer(many=True, read_only=True)
+    total_lessons = serializers.IntegerField(read_only=True)
+    total_duration_minutes = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Course
+        fields = [
+            'id', 'title', 'slug', 'description', 'thumbnail_url',
+            'saleor_product_id', 'status', 'total_lessons',
+            'total_duration_minutes', 'modules', 'created_at', 'updated_at'
+        ]
+
+
+class ReorderItemSerializer(serializers.Serializer):
+    """Serializer for reorder requests."""
+    id = serializers.IntegerField()
+    order = serializers.IntegerField()
+
+
+class ReorderModulesSerializer(serializers.Serializer):
+    """Serializer for reordering modules."""
+    modules = ReorderItemSerializer(many=True)
+
+
+class ReorderLessonsSerializer(serializers.Serializer):
+    """Serializer for reordering lessons within a module."""
+    module_id = serializers.IntegerField()
+    lessons = ReorderItemSerializer(many=True)

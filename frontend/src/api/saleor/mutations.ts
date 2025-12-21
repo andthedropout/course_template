@@ -85,6 +85,46 @@ export interface CheckoutPaymentCreateResponse {
   };
 }
 
+// Transaction API types (for Stripe App integration)
+export interface TransactionInitializeResponse {
+  transactionInitialize: {
+    transaction: {
+      id: string;
+    } | null;
+    data: {
+      paymentIntent?: {
+        clientSecret: string;
+      };
+      publishableKey?: string;
+    } | null;
+    errors: CheckoutError[];
+  };
+}
+
+export interface TransactionProcessResponse {
+  transactionProcess: {
+    transaction: {
+      id: string;
+    } | null;
+    transactionEvent: {
+      pspReference: string;
+      type: string;
+      amount: {
+        amount: number;
+        currency: string;
+      };
+    } | null;
+    data: Record<string, unknown> | null;
+    errors: CheckoutError[];
+  };
+}
+
+export interface TransactionInitializeResult {
+  clientSecret: string;
+  publishableKey: string;
+  transactionId: string;
+}
+
 // Mutation definitions
 const CHECKOUT_CREATE_MUTATION = `
   mutation CheckoutCreate($channel: String!, $lines: [CheckoutLineInput!]!) {
@@ -339,6 +379,56 @@ const CHECKOUT_PAYMENT_CREATE_MUTATION = `
   }
 `;
 
+// Transaction API mutations (for Stripe App integration)
+const TRANSACTION_INITIALIZE_MUTATION = `
+  mutation TransactionInitialize(
+    $checkoutId: ID!
+    $paymentGatewayId: String!
+    $amount: PositiveDecimal!
+    $data: JSON
+  ) {
+    transactionInitialize(
+      id: $checkoutId
+      paymentGateway: { id: $paymentGatewayId, data: $data }
+      amount: $amount
+    ) {
+      transaction {
+        id
+      }
+      data
+      errors {
+        field
+        message
+        code
+      }
+    }
+  }
+`;
+
+const TRANSACTION_PROCESS_MUTATION = `
+  mutation TransactionProcess($transactionId: ID!, $data: JSON) {
+    transactionProcess(id: $transactionId, data: $data) {
+      transaction {
+        id
+      }
+      transactionEvent {
+        pspReference
+        type
+        amount {
+          amount
+          currency
+        }
+      }
+      data
+      errors {
+        field
+        message
+        code
+      }
+    }
+  }
+`;
+
 // Line input type
 export interface CheckoutLineInput {
   variantId: string;
@@ -535,4 +625,84 @@ export async function createPayment(
   }
 
   return data.checkoutPaymentCreate.payment;
+}
+
+/**
+ * Initialize a transaction with Saleor's Stripe App.
+ * Returns the Stripe client secret needed for PaymentElement.
+ *
+ * @param checkoutId - The Saleor checkout ID
+ * @param amount - The payment amount
+ * @param paymentGatewayId - The payment gateway ID (default: saleor.app.payment.stripe)
+ * @param paymentData - Optional data to pass to the payment gateway
+ */
+export async function transactionInitialize(
+  checkoutId: string,
+  amount: number,
+  paymentGatewayId: string = 'saleor.app.payment.stripe',
+  paymentData?: Record<string, unknown>
+): Promise<TransactionInitializeResult> {
+  const data = await mutate<TransactionInitializeResponse>(
+    TRANSACTION_INITIALIZE_MUTATION,
+    {
+      checkoutId,
+      paymentGatewayId,
+      amount: amount.toString(),
+      data: paymentData || null,
+    }
+  );
+
+  if (data.transactionInitialize.errors.length > 0) {
+    const err = data.transactionInitialize.errors[0];
+    throw new Error(`${err.field}: ${err.message}`);
+  }
+
+  if (!data.transactionInitialize.transaction) {
+    throw new Error('Failed to initialize transaction');
+  }
+
+  const responseData = data.transactionInitialize.data;
+  if (!responseData?.paymentIntent?.clientSecret) {
+    throw new Error('No client secret returned from payment gateway');
+  }
+
+  return {
+    clientSecret: responseData.paymentIntent.clientSecret,
+    publishableKey: responseData.publishableKey || '',
+    transactionId: data.transactionInitialize.transaction.id,
+  };
+}
+
+/**
+ * Process a transaction after Stripe payment is confirmed.
+ * Notifies Saleor that the payment has been processed.
+ *
+ * @param transactionId - The transaction ID from transactionInitialize
+ * @param data - Optional data to pass (e.g., payment intent ID)
+ */
+export async function transactionProcess(
+  transactionId: string,
+  data?: Record<string, unknown>
+): Promise<{ success: boolean; transactionId: string }> {
+  const response = await mutate<TransactionProcessResponse>(
+    TRANSACTION_PROCESS_MUTATION,
+    {
+      transactionId,
+      data: data || null,
+    }
+  );
+
+  if (response.transactionProcess.errors.length > 0) {
+    const err = response.transactionProcess.errors[0];
+    throw new Error(`${err.field}: ${err.message}`);
+  }
+
+  if (!response.transactionProcess.transaction) {
+    throw new Error('Failed to process transaction');
+  }
+
+  return {
+    success: true,
+    transactionId: response.transactionProcess.transaction.id,
+  };
 }

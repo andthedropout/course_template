@@ -60,6 +60,12 @@ module.exports = {
     				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
     				border: 'hsl(var(--sidebar-border))',
     				ring: 'hsl(var(--sidebar-ring))'
+    			},
+    			shiki: {
+    				light: 'var(--shiki-light)',
+    				'light-bg': 'var(--shiki-light-bg)',
+    				dark: 'var(--shiki-dark)',
+    				'dark-bg': 'var(--shiki-dark-bg)'
     			}
     		},
     		fontFamily: {
@@ -100,7 +106,8 @@ module.exports = {
     			'slide-left-slower': 'slide-left-slower 20s linear infinite',
     			'accordion-down': 'accordion-down 0.2s ease-out',
     			'accordion-up': 'accordion-up 0.2s ease-out',
-    			scroll: 'scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite'
+    			scroll: 'scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite',
+    			'typing-dot-bounce': 'typing-dot-bounce 1.25s ease-out infinite'
     		},
     		keyframes: {
     			'float-slow': {
@@ -199,6 +206,14 @@ module.exports = {
     				},
     				to: {
     					height: '0'
+    				}
+    			},
+    			'typing-dot-bounce': {
+    				'0%,40%': {
+    					transform: 'translateY(0)'
+    				},
+    				'20%': {
+    					transform: 'translateY(-0.25rem)'
     				}
     			}
     		},

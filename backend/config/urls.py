@@ -43,7 +43,7 @@ api_patterns = [
     path("backgrounds/", list_available_backgrounds, name="api_backgrounds"),
     path("upload/image/", ImageUploadView.as_view(), name="api_image_upload"),
     # User URLs
-    path("", include("users.urls")),
+    path("users/", include("users.urls")),
     # Theme URLs
     path("", include("themes.urls")),
     # Blog URLs

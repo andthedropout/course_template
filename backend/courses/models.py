@@ -85,10 +85,15 @@ class Lesson(models.Model):
         on_delete=models.CASCADE
     )
     title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=255)
+    slug = models.SlugField(max_length=255, blank=True)
     content = MarkdownxField(
         blank=True,
-        help_text="Lesson content in Markdown"
+        help_text="Legacy: Lesson content in Markdown (use blocks instead)"
+    )
+    blocks = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Block-based content as JSON array"
     )
     video_url = models.CharField(
         max_length=500,

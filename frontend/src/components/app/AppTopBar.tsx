@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { AIChatToggle } from '@/components/chat/AIChatSidebar';
 
 export function AppTopBar() {
   return (
@@ -21,6 +22,7 @@ export function AppTopBar() {
           <span className="sr-only">Notifications</span>
         </Button>
         <CartDrawer />
+        <AIChatToggle />
         <ThemeToggle />
       </div>
     </header>
