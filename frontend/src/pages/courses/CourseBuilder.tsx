@@ -283,72 +283,88 @@ export default function CourseBuilder() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-muted/30">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b bg-background">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
+      <header className="flex items-center justify-between px-4 py-3 border-b bg-background shadow-sm">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" asChild className="gap-1.5">
             <Link to="/courses/dashboard">
-              <Icon name="ArrowLeft" className="h-4 w-4 mr-2" />
-              Courses
+              <Icon name="ArrowLeft" className="h-4 w-4" />
+              <span className="hidden sm:inline">Courses</span>
             </Link>
           </Button>
-          <div className="h-4 w-px bg-border" />
-          <span className="font-medium">{course.title}</span>
+          <div className="h-5 w-px bg-border" />
+          <div className="flex items-center gap-2">
+            <span className="font-semibold truncate max-w-[200px]">{course.title}</span>
+            <span
+              className={cn(
+                'text-xs px-2 py-0.5 rounded-full font-medium',
+                status === 'published'
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400'
+                  : 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400'
+              )}
+            >
+              {status}
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-          >
+          <Button variant="outline" size="sm" asChild className="gap-1.5">
             <Link to={`/app/courses/${slug}`} target="_blank">
-              <Icon name="Eye" className="h-4 w-4 mr-2" />
-              Preview
+              <Icon name="Eye" className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Preview</span>
             </Link>
           </Button>
-          <Button onClick={handleSaveSettings} disabled={isSaving}>
+          <Button onClick={handleSaveSettings} disabled={isSaving} size="sm" className="gap-1.5">
             {isSaving ? (
               <>
-                <Icon name="Loader2" className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
+                <Icon name="Loader2" className="h-3.5 w-3.5 animate-spin" />
+                <span>Saving...</span>
               </>
             ) : (
               <>
-                <Icon name="Save" className="h-4 w-4 mr-2" />
-                Save
+                <Icon name="Check" className="h-3.5 w-3.5" />
+                <span>Save</span>
               </>
             )}
           </Button>
         </div>
-      </div>
+      </header>
 
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left - Course structure */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Course Structure</h2>
-              <Button size="sm" onClick={() => setNewModuleOpen(true)}>
-                <Icon name="Plus" className="h-4 w-4 mr-2" />
+        <main className="flex-1 overflow-y-auto">
+          <div className="max-w-3xl mx-auto p-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-semibold">Course Structure</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Organize your course into modules and lessons
+                </p>
+              </div>
+              <Button onClick={() => setNewModuleOpen(true)} className="gap-1.5">
+                <Icon name="Plus" className="h-4 w-4" />
                 Add Module
               </Button>
             </div>
 
             {!course.modules?.length ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <Icon name="Layers" className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                  <p className="text-muted-foreground mb-4">No modules yet</p>
-                  <Button onClick={() => setNewModuleOpen(true)}>
-                    <Icon name="Plus" className="h-4 w-4 mr-2" />
-                    Add First Module
-                  </Button>
-                </CardContent>
-              </Card>
+              <div className="border-2 border-dashed border-muted-foreground/25 rounded-xl py-16 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                  <Icon name="Layers" className="h-8 w-8 text-muted-foreground/40" />
+                </div>
+                <h3 className="text-lg font-medium mb-2">No modules yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                  Modules help organize your lessons into sections. Start by adding your first module.
+                </p>
+                <Button onClick={() => setNewModuleOpen(true)} className="gap-1.5">
+                  <Icon name="Plus" className="h-4 w-4" />
+                  Add First Module
+                </Button>
+              </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {course.modules.map((module, moduleIndex) => (
                   <ModuleCard
                     key={module.id}
@@ -377,59 +393,68 @@ export default function CourseBuilder() {
               </div>
             )}
           </div>
-        </div>
+        </main>
 
         {/* Right - Course settings */}
-        <div className="w-80 border-l bg-muted/30 p-6 overflow-y-auto">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Course Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        <aside className="w-80 border-l bg-muted/20 flex flex-col">
+          <div className="p-4 border-b bg-background/50">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Course Settings
+            </h2>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            {/* Basic Info */}
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title" className="text-xs font-medium">Title</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  className="h-9"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="text-xs font-medium">Description</Label>
                 <textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full min-h-[100px] px-3 py-2 text-sm border rounded-md bg-background"
+                  className="w-full min-h-[80px] px-3 py-2 text-sm border rounded-lg bg-background resize-none"
+                  placeholder="What will students learn?"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="thumbnail">Thumbnail URL</Label>
+                <Label htmlFor="thumbnail" className="text-xs font-medium">Thumbnail URL</Label>
                 <Input
                   id="thumbnail"
                   value={thumbnailUrl}
                   onChange={(e) => setThumbnailUrl(e.target.value)}
                   placeholder="https://..."
+                  className="h-9"
                 />
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="saleor-id">Saleor Product ID</Label>
-                <Input
-                  id="saleor-id"
-                  value={saleorProductId}
-                  onChange={(e) => setSaleorProductId(e.target.value)}
-                  placeholder="UHJvZHVjdDox"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Links this course to a Saleor product for purchases
-                </p>
-              </div>
+            <div className="h-px bg-border" />
 
-              <div className="flex items-center justify-between pt-2">
-                <Label htmlFor="published">Published</Label>
+            {/* Publishing */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Publishing
+              </h3>
+
+              <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50">
+                <div className="space-y-0.5">
+                  <Label htmlFor="published" className="text-sm font-medium cursor-pointer">
+                    Published
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Make course visible to students
+                  </p>
+                </div>
                 <Switch
                   id="published"
                   checked={status === 'published'}
@@ -438,52 +463,67 @@ export default function CourseBuilder() {
                   }
                 />
               </div>
-            </CardContent>
-          </Card>
 
-          <div className="mt-6">
-            <h3 className="text-sm font-medium mb-2">Stats</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-background p-3 rounded-lg border">
-                <p className="text-muted-foreground">Modules</p>
-                <p className="text-2xl font-bold">{course.modules?.length || 0}</p>
-              </div>
-              <div className="bg-background p-3 rounded-lg border">
-                <p className="text-muted-foreground">Lessons</p>
-                <p className="text-2xl font-bold">{course.total_lessons}</p>
-              </div>
-              <div className="bg-background p-3 rounded-lg border col-span-2">
-                <p className="text-muted-foreground">Total Duration</p>
-                <p className="text-2xl font-bold">{course.total_duration_minutes} min</p>
+              <div className="space-y-2">
+                <Label htmlFor="saleor-id" className="text-xs font-medium">Saleor Product ID</Label>
+                <Input
+                  id="saleor-id"
+                  value={saleorProductId}
+                  onChange={(e) => setSaleorProductId(e.target.value)}
+                  placeholder="UHJvZHVjdDox"
+                  className="h-9 font-mono text-sm"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Link to Saleor product for purchases
+                </p>
               </div>
             </div>
-          </div>
 
-          {/* Danger Zone */}
-          <div className="mt-8 pt-6 border-t border-destructive/20">
-            <h3 className="text-sm font-medium text-destructive mb-3">Danger Zone</h3>
-            <Card className="border-destructive/30">
-              <CardContent className="pt-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-sm">Delete this course</p>
-                    <p className="text-xs text-muted-foreground">
-                      Permanently delete this course and all its content
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-destructive border-destructive/50 hover:bg-destructive hover:text-destructive-foreground"
-                    onClick={() => setShowDeleteCourse(true)}
-                  >
-                    Delete
-                  </Button>
+            <div className="h-px bg-border" />
+
+            {/* Stats */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Stats
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-background p-3 rounded-lg border text-center">
+                  <p className="text-2xl font-bold">{course.modules?.length || 0}</p>
+                  <p className="text-xs text-muted-foreground">Modules</p>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="bg-background p-3 rounded-lg border text-center">
+                  <p className="text-2xl font-bold">{course.total_lessons}</p>
+                  <p className="text-xs text-muted-foreground">Lessons</p>
+                </div>
+                <div className="bg-background p-3 rounded-lg border text-center">
+                  <p className="text-2xl font-bold">{course.total_duration_minutes}</p>
+                  <p className="text-xs text-muted-foreground">Minutes</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-px bg-border" />
+
+            {/* Danger Zone */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-destructive">
+                Danger Zone
+              </h3>
+              <button
+                onClick={() => setShowDeleteCourse(true)}
+                className="w-full flex items-center justify-between p-3 rounded-lg border border-destructive/30 hover:bg-destructive/5 transition-colors group"
+              >
+                <div className="text-left">
+                  <p className="text-sm font-medium">Delete Course</p>
+                  <p className="text-xs text-muted-foreground">
+                    Permanently remove this course
+                  </p>
+                </div>
+                <Icon name="Trash2" className="h-4 w-4 text-destructive opacity-60 group-hover:opacity-100" />
+              </button>
+            </div>
           </div>
-        </div>
+        </aside>
       </div>
 
       {/* Delete Course Confirmation */}
@@ -628,76 +668,113 @@ function ModuleCard({
 }: ModuleCardProps) {
   return (
     <Collapsible open={isExpanded} onOpenChange={onToggle}>
-      <Card>
+      <div
+        className={cn(
+          'bg-background rounded-xl border shadow-sm transition-all duration-200',
+          isExpanded ? 'shadow-md' : 'hover:shadow-md hover:border-primary/30'
+        )}
+      >
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors pb-3">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted/30 transition-colors rounded-t-xl">
+            <div
+              className={cn(
+                'flex items-center justify-center w-8 h-8 rounded-lg transition-colors',
+                isExpanded ? 'bg-primary/10' : 'bg-muted/50'
+              )}
+            >
               <Icon
                 name={isExpanded ? 'ChevronDown' : 'ChevronRight'}
-                className="h-4 w-4 text-muted-foreground"
+                className={cn(
+                  'h-4 w-4 transition-colors',
+                  isExpanded ? 'text-primary' : 'text-muted-foreground'
+                )}
               />
-              <div className="flex-1">
-                <CardTitle className="text-base">{module.title}</CardTitle>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  {module.lessons.length} lesson{module.lessons.length !== 1 && 's'}
-                </p>
-              </div>
-              <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                <Button variant="ghost" size="sm" onClick={onAddLesson}>
-                  <Icon name="Plus" className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onDeleteModule}
-                  className="text-destructive hover:text-destructive"
-                >
-                  <Icon name="Trash2" className="h-4 w-4" />
-                </Button>
-              </div>
             </div>
-          </CardHeader>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-sm truncate">{module.title}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {module.lessons.length} lesson{module.lessons.length !== 1 && 's'}
+              </p>
+            </div>
+            <div
+              className="flex items-center gap-1 opacity-60 hover:opacity-100 transition-opacity"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onAddLesson}
+                className="h-8 w-8 p-0"
+              >
+                <Icon name="Plus" className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onDeleteModule}
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+              >
+                <Icon name="Trash2" className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <CardContent className="pt-0">
+          <div className="px-4 pb-4">
             {module.lessons.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No lessons yet.{' '}
-                <button onClick={onAddLesson} className="text-primary hover:underline">
-                  Add one
-                </button>
-              </p>
+              <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg py-6 text-center">
+                <Icon name="FileText" className="h-6 w-6 text-muted-foreground/40 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">
+                  No lessons yet.{' '}
+                  <button onClick={onAddLesson} className="text-primary hover:underline font-medium">
+                    Add one
+                  </button>
+                </p>
+              </div>
             ) : (
-              <div className="space-y-1">
-                {module.lessons.map((lesson) => (
+              <div className="space-y-1 pt-1">
+                {module.lessons.map((lesson, index) => (
                   <Link
                     key={lesson.id}
                     to="/courses/$slug/$lessonSlug"
                     params={{ slug: courseSlug, lessonSlug: lesson.slug }}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted group cursor-pointer"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/50 group cursor-pointer transition-colors"
                   >
-                    <Icon
-                      name={lesson.has_video ? 'Video' : 'FileText'}
-                      className="h-4 w-4 text-muted-foreground"
-                    />
-                    <span className="flex-1 text-sm hover:text-primary">
+                    <span className="text-xs text-muted-foreground/60 w-5 text-center font-mono">
+                      {index + 1}
+                    </span>
+                    <div
+                      className={cn(
+                        'flex items-center justify-center w-7 h-7 rounded-md',
+                        lesson.has_video ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-muted/50'
+                      )}
+                    >
+                      <Icon
+                        name={lesson.has_video ? 'Video' : 'FileText'}
+                        className={cn(
+                          'h-3.5 w-3.5',
+                          lesson.has_video ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground'
+                        )}
+                      />
+                    </div>
+                    <span className="flex-1 text-sm font-medium truncate group-hover:text-primary transition-colors">
                       {lesson.title}
                     </span>
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-2">
                       {lesson.is_free_preview && (
-                        <span className="text-xs text-green-600 dark:text-green-400">
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-medium">
                           Free
                         </span>
                       )}
                       {lesson.duration_minutes > 0 && (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-muted-foreground tabular-nums">
                           {lesson.duration_minutes}m
                         </span>
                       )}
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 text-destructive hover:text-destructive"
+                        className="h-6 w-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -711,9 +788,9 @@ function ModuleCard({
                 ))}
               </div>
             )}
-          </CardContent>
+          </div>
         </CollapsibleContent>
-      </Card>
+      </div>
     </Collapsible>
   );
 }

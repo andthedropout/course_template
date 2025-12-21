@@ -55,13 +55,13 @@ export function CodeBlock({ data, onChange, isEditing }: CodeBlockProps) {
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Language</Label>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">Language</Label>
             <Select
               value={data.language}
               onValueChange={(v) => onChange({ ...data, language: v })}
             >
-              <SelectTrigger>
+              <SelectTrigger className="h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -74,25 +74,28 @@ export function CodeBlock({ data, onChange, isEditing }: CodeBlockProps) {
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="code-filename">Filename (optional)</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="code-filename" className="text-xs font-medium text-muted-foreground">
+              Filename (optional)
+            </Label>
             <Input
               id="code-filename"
               value={data.filename || ''}
               onChange={(e) => onChange({ ...data, filename: e.target.value })}
               placeholder="example.js"
+              className="h-9 font-mono text-sm"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="code-content">Code</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="code-content" className="text-xs font-medium text-muted-foreground">Code</Label>
           <Textarea
             id="code-content"
             value={data.code}
             onChange={(e) => onChange({ ...data, code: e.target.value })}
             placeholder="Enter your code here..."
-            className="font-mono text-sm min-h-[200px]"
+            className="font-mono text-sm min-h-[200px] bg-muted/30"
             rows={10}
           />
         </div>

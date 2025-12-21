@@ -9,20 +9,17 @@ interface BlockPaletteProps {
 
 export function BlockPalette({ onAddBlock }: BlockPaletteProps) {
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium text-muted-foreground px-2">Blocks</h3>
-      <div className="space-y-1">
-        {BLOCK_TYPES.map((block) => (
-          <DraggableBlockItem
-            key={block.type}
-            type={block.type}
-            label={block.label}
-            icon={block.icon}
-            description={block.description}
-            onAddBlock={onAddBlock}
-          />
-        ))}
-      </div>
+    <div className="grid grid-cols-2 gap-2">
+      {BLOCK_TYPES.map((block) => (
+        <DraggableBlockItem
+          key={block.type}
+          type={block.type}
+          label={block.label}
+          icon={block.icon}
+          description={block.description}
+          onAddBlock={onAddBlock}
+        />
+      ))}
     </div>
   );
 }
@@ -54,17 +51,18 @@ function DraggableBlockItem({
       {...attributes}
       onClick={() => onAddBlock(type)}
       className={cn(
-        'w-full flex items-center gap-3 p-2 rounded-lg text-left',
-        'hover:bg-accent transition-colors cursor-grab active:cursor-grabbing',
-        'border border-transparent hover:border-border',
-        isDragging && 'opacity-50'
+        'flex flex-col items-center gap-2 p-3 rounded-xl text-center',
+        'bg-background border border-border/50 shadow-sm',
+        'hover:border-primary/50 hover:shadow-md hover:scale-[1.02]',
+        'transition-all duration-150 cursor-grab active:cursor-grabbing',
+        isDragging && 'opacity-50 scale-95'
       )}
       title={description}
     >
-      <div className="flex items-center justify-center w-8 h-8 rounded bg-muted">
-        <Icon name={icon} className="h-4 w-4 text-muted-foreground" />
+      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
+        <Icon name={icon} className="h-5 w-5 text-primary" />
       </div>
-      <span className="text-sm font-medium">{label}</span>
+      <span className="text-xs font-medium text-foreground/80">{label}</span>
     </button>
   );
 }

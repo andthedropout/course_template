@@ -42,32 +42,36 @@ export function VideoBlock({ data, onChange, isEditing }: VideoBlockProps) {
   if (isEditing) {
     return (
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="video-url">Video URL</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="video-url" className="text-xs font-medium text-muted-foreground">Video URL</Label>
           <Input
             id="video-url"
             value={data.url}
             onChange={(e) => onChange({ ...data, url: e.target.value })}
             placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+            className="h-9"
           />
           <p className="text-xs text-muted-foreground">
             Supports YouTube, Vimeo, or direct video files (.mp4, .webm)
           </p>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="video-title">Title (optional)</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="video-title" className="text-xs font-medium text-muted-foreground">
+            Title (optional)
+          </Label>
           <Input
             id="video-title"
             value={data.title || ''}
             onChange={(e) => onChange({ ...data, title: e.target.value })}
             placeholder="Video title for accessibility"
+            className="h-9"
           />
         </div>
 
         {data.url && (
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-2">Preview:</p>
+          <div className="pt-2">
+            <p className="text-xs font-medium text-muted-foreground mb-2">Preview</p>
             <VideoPreview data={data} />
           </div>
         )}

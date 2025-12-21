@@ -13,39 +13,44 @@ export function ImageBlock({ data, onChange, isEditing }: ImageBlockProps) {
   if (isEditing) {
     return (
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="image-url">Image URL</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="image-url" className="text-xs font-medium text-muted-foreground">Image URL</Label>
           <Input
             id="image-url"
             value={data.url}
             onChange={(e) => onChange({ ...data, url: e.target.value })}
             placeholder="https://example.com/image.jpg"
+            className="h-9"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="image-alt">Alt Text</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="image-alt" className="text-xs font-medium text-muted-foreground">Alt Text</Label>
           <Input
             id="image-alt"
             value={data.alt}
             onChange={(e) => onChange({ ...data, alt: e.target.value })}
             placeholder="Describe the image for accessibility"
+            className="h-9"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="image-caption">Caption (optional)</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="image-caption" className="text-xs font-medium text-muted-foreground">
+            Caption (optional)
+          </Label>
           <Input
             id="image-caption"
             value={data.caption || ''}
             onChange={(e) => onChange({ ...data, caption: e.target.value })}
             placeholder="Optional caption below the image"
+            className="h-9"
           />
         </div>
 
         {data.url && (
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-2">Preview:</p>
+          <div className="pt-2">
+            <p className="text-xs font-medium text-muted-foreground mb-2">Preview</p>
             <ImagePreview data={data} />
           </div>
         )}

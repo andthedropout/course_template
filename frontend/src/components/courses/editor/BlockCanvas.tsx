@@ -127,9 +127,9 @@ export function BlockCanvas({ blocks, onChange }: BlockCanvasProps) {
       <div
         ref={setDroppableRef}
         className={cn(
-          'min-h-[400px] rounded-lg transition-colors',
-          isOver && 'bg-primary/5 ring-2 ring-primary/20',
-          blocks.length === 0 && 'border-2 border-dashed'
+          'min-h-[500px] rounded-xl transition-all duration-200',
+          isOver && 'bg-primary/5 ring-2 ring-primary ring-offset-2',
+          blocks.length === 0 && 'border-2 border-dashed border-muted-foreground/25'
         )}
       >
         {blocks.length === 0 ? (
@@ -139,7 +139,7 @@ export function BlockCanvas({ blocks, onChange }: BlockCanvasProps) {
             items={blocks.map((b) => b.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-4">
+            <div className="space-y-3">
               {blocks.map((block) => (
                 <SortableBlockWrapper
                   key={block.id}
@@ -159,7 +159,7 @@ export function BlockCanvas({ blocks, onChange }: BlockCanvasProps) {
 
       <DragOverlay>
         {activeBlock && (
-          <div className="bg-background border rounded-lg shadow-lg p-4 opacity-90">
+          <div className="bg-background border-2 border-primary rounded-xl shadow-2xl p-4 opacity-95 rotate-1">
             <BlockRenderer
               block={activeBlock}
               onChange={() => {}}
@@ -212,56 +212,85 @@ function SortableBlockWrapper({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group relative bg-background border rounded-lg transition-all',
-        isDragging && 'opacity-50 z-50',
-        isEditing ? 'ring-2 ring-primary' : 'hover:border-primary/50'
+        'group relative bg-background rounded-xl transition-all duration-200',
+        'border shadow-sm',
+        isDragging && 'opacity-50 z-50 shadow-lg scale-[1.02]',
+        isEditing
+          ? 'ring-2 ring-primary border-primary shadow-md'
+          : 'hover:shadow-md hover:border-primary/30'
       )}
     >
+      {/* Drag handle - left side */}
+      <div
+        {...attributes}
+        {...listeners}
+        className={cn(
+          'absolute -left-3 top-1/2 -translate-y-1/2 z-10',
+          'flex items-center justify-center w-6 h-12 rounded-lg',
+          'bg-muted border shadow-sm cursor-grab active:cursor-grabbing',
+          'opacity-0 group-hover:opacity-100 transition-opacity',
+          'hover:bg-primary/10 hover:border-primary/50'
+        )}
+      >
+        <Icon name="GripVertical" className="h-4 w-4 text-muted-foreground" />
+      </div>
+
       {/* Block header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/30">
-        <div className="flex items-center gap-2">
-          <button
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded"
-          >
-            <Icon name="GripVertical" className="h-4 w-4 text-muted-foreground" />
-          </button>
-          <Icon
-            name={blockMeta?.icon || 'Box'}
-            className="h-4 w-4 text-muted-foreground"
-          />
+      <div className="flex items-center justify-between px-4 py-2.5 border-b bg-muted/20">
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10">
+            <Icon
+              name={blockMeta?.icon || 'Box'}
+              className="h-4 w-4 text-primary"
+            />
+          </div>
           <span className="text-sm font-medium">{blockMeta?.label || block.type}</span>
         </div>
         <div className="flex items-center gap-1">
           {isEditing ? (
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <Icon name="Check" className="h-4 w-4 mr-1" />
+            <Button
+              variant="default"
+              size="sm"
+              onClick={onClose}
+              className="h-7 px-2.5 text-xs"
+            >
+              <Icon name="Check" className="h-3.5 w-3.5 mr-1" />
               Done
             </Button>
           ) : (
-            <Button variant="ghost" size="sm" onClick={onEdit}>
-              <Icon name="Pencil" className="h-4 w-4" />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onEdit}
+              className="h-7 w-7 p-0 opacity-60 hover:opacity-100"
+            >
+              <Icon name="Pencil" className="h-3.5 w-3.5" />
             </Button>
           )}
           <Button
             variant="ghost"
             size="sm"
             onClick={onDelete}
-            className="text-destructive hover:text-destructive"
+            className="h-7 w-7 p-0 opacity-60 hover:opacity-100 text-destructive hover:text-destructive hover:bg-destructive/10"
           >
-            <Icon name="Trash2" className="h-4 w-4" />
+            <Icon name="Trash2" className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>
 
       {/* Block content */}
-      <div className="p-4" onClick={() => !isEditing && onEdit()}>
+      <div
+        className={cn(
+          "p-4 cursor-pointer",
+          !isEditing && "hover:bg-muted/30 transition-colors"
+        )}
+        onClick={() => !isEditing && onEdit()}
+      >
         <BlockRenderer block={block} onChange={onChange} isEditing={isEditing} />
       </div>
 
       {/* Add block button (appears on hover) */}
-      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10">
         <AddBlockButton onAddBlock={onAddAfter} />
       </div>
     </div>
@@ -270,12 +299,27 @@ function SortableBlockWrapper({
 
 function EmptyState({ onAddBlock }: { onAddBlock: (type: BlockType) => void }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <Icon name="Layers" className="h-12 w-12 text-muted-foreground/50 mb-4" />
-      <h3 className="text-lg font-medium mb-2">No content yet</h3>
-      <p className="text-muted-foreground mb-4 max-w-sm">
-        Drag blocks from the palette or click below to add content to this lesson.
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="w-20 h-20 rounded-2xl bg-muted/50 flex items-center justify-center mb-6">
+        <Icon name="Layers" className="h-10 w-10 text-muted-foreground/40" />
+      </div>
+      <h3 className="text-xl font-semibold mb-2">Start building your lesson</h3>
+      <p className="text-muted-foreground mb-8 max-w-md leading-relaxed">
+        Add content blocks from the left panel or click below to get started.
+        You can drag blocks to reorder them anytime.
       </p>
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {BLOCK_TYPES.slice(0, 3).map((block) => (
+          <button
+            key={block.type}
+            onClick={() => onAddBlock(block.type)}
+            className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 transition-all"
+          >
+            <Icon name={block.icon} className="h-6 w-6 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground">{block.label}</span>
+          </button>
+        ))}
+      </div>
       <AddBlockButton onAddBlock={onAddBlock} />
     </div>
   );
@@ -294,9 +338,9 @@ function AddBlockButton({
         variant="outline"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-background shadow-sm"
+        className="bg-background shadow-sm hover:shadow-md transition-shadow rounded-full px-4"
       >
-        <Icon name="Plus" className="h-4 w-4 mr-1" />
+        <Icon name="Plus" className="h-4 w-4 mr-1.5" />
         Add Block
       </Button>
       {isOpen && (
@@ -305,20 +349,24 @@ function AddBlockButton({
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-popover border rounded-lg shadow-lg p-2 z-20 min-w-[200px]">
-            {BLOCK_TYPES.map((block) => (
-              <button
-                key={block.type}
-                onClick={() => {
-                  onAddBlock(block.type);
-                  setIsOpen(false);
-                }}
-                className="w-full flex items-center gap-2 p-2 rounded hover:bg-accent text-left"
-              >
-                <Icon name={block.icon} className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">{block.label}</span>
-              </button>
-            ))}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-popover border rounded-xl shadow-xl p-2 z-20 min-w-[220px]">
+            <div className="grid grid-cols-2 gap-1.5">
+              {BLOCK_TYPES.map((block) => (
+                <button
+                  key={block.type}
+                  onClick={() => {
+                    onAddBlock(block.type);
+                    setIsOpen(false);
+                  }}
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-lg hover:bg-accent text-center transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
+                    <Icon name={block.icon} className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="text-xs font-medium">{block.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </>
       )}

@@ -118,115 +118,167 @@ export function LessonEditor({
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col bg-muted/30">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b bg-background">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={onBack}>
-              <Icon name="ArrowLeft" className="h-4 w-4 mr-2" />
-              Back
+        <header className="flex items-center justify-between px-4 py-3 border-b bg-background shadow-sm">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
+              <Icon name="ArrowLeft" className="h-4 w-4" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
-            <div className="h-4 w-px bg-border" />
-            <span className="text-sm text-muted-foreground">{courseSlug}</span>
-            <Icon name="ChevronRight" className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">{title}</span>
+            <div className="h-5 w-px bg-border" />
+            <nav className="flex items-center gap-1.5 text-sm">
+              <span className="text-muted-foreground truncate max-w-[120px]">{courseSlug}</span>
+              <Icon name="ChevronRight" className="h-3.5 w-3.5 text-muted-foreground/50" />
+              <span className="font-semibold truncate max-w-[200px]">{title}</span>
+            </nav>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {isDirty && (
-              <span className="text-sm text-muted-foreground">Unsaved changes</span>
+              <div className="flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                <span className="hidden sm:inline">Unsaved</span>
+              </div>
             )}
-            <Button onClick={() => handleSave()} disabled={isSaving || !isDirty}>
+            <Button
+              onClick={() => handleSave()}
+              disabled={isSaving || !isDirty}
+              size="sm"
+              className="gap-1.5"
+            >
               {isSaving ? (
                 <>
-                  <Icon name="Loader2" className="h-4 w-4 mr-2 animate-spin" />
-                  Saving...
+                  <Icon name="Loader2" className="h-3.5 w-3.5 animate-spin" />
+                  <span>Saving...</span>
                 </>
               ) : (
                 <>
-                  <Icon name="Save" className="h-4 w-4 mr-2" />
-                  Save
+                  <Icon name="Check" className="h-3.5 w-3.5" />
+                  <span>Save</span>
                 </>
               )}
             </Button>
           </div>
-        </div>
+        </header>
 
         {/* Main content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left sidebar - Block palette */}
-          <div className="w-48 border-r bg-muted/30 p-4 overflow-y-auto">
-            <BlockPalette onAddBlock={handleAddBlock} />
-          </div>
+          <aside className="w-56 border-r bg-muted/20 flex flex-col">
+            <div className="p-4 border-b bg-background/50">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Content Blocks
+              </h2>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3">
+              <BlockPalette onAddBlock={handleAddBlock} />
+            </div>
+          </aside>
 
           {/* Center - Content canvas */}
-          <div className="flex-1 overflow-y-auto p-6">
-            <BlockCanvas blocks={blocks} onChange={setBlocks} />
-          </div>
+          <main className="flex-1 overflow-y-auto bg-muted/10">
+            <div className="max-w-3xl mx-auto p-8">
+              <BlockCanvas blocks={blocks} onChange={setBlocks} />
+            </div>
+          </main>
 
           {/* Right sidebar - Settings */}
-          <div className="w-72 border-l bg-muted/30 p-4 overflow-y-auto">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Lesson Settings</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+          <aside className="w-80 border-l bg-muted/20 flex flex-col">
+            <div className="p-4 border-b bg-background/50">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Lesson Settings
+              </h2>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+              {/* Basic Info */}
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="title" className="text-xs font-medium">Title</Label>
                   <Input
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Lesson title"
+                    className="h-9"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="slug">Slug</Label>
+                  <Label htmlFor="slug" className="text-xs font-medium">URL Slug</Label>
                   <Input
                     id="slug"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     placeholder="lesson-slug"
+                    className="h-9 font-mono text-sm"
                   />
                 </div>
+              </div>
+
+              <div className="h-px bg-border" />
+
+              {/* Lesson Options */}
+              <div className="space-y-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Options
+                </h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="duration">Duration (minutes)</Label>
-                  <Input
-                    id="duration"
-                    type="number"
-                    value={durationMinutes}
-                    onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                    min={0}
-                  />
+                  <Label htmlFor="duration" className="text-xs font-medium">Duration</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="duration"
+                      type="number"
+                      value={durationMinutes}
+                      onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                      min={0}
+                      className="h-9 w-20"
+                    />
+                    <span className="text-sm text-muted-foreground">minutes</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="free-preview">Free Preview</Label>
+                <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="free-preview" className="text-sm font-medium cursor-pointer">
+                      Free Preview
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Allow non-enrolled users to view
+                    </p>
+                  </div>
                   <Switch
                     id="free-preview"
                     checked={isFreePreview}
                     onCheckedChange={setIsFreePreview}
                   />
                 </div>
+              </div>
 
-                <hr className="my-4" />
+              <div className="h-px bg-border" />
+
+              {/* Media */}
+              <div className="space-y-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Media
+                </h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="video-url">Video URL</Label>
+                  <Label htmlFor="video-url" className="text-xs font-medium">Video URL</Label>
                   <Input
                     id="video-url"
                     value={videoUrl}
                     onChange={(e) => setVideoUrl(e.target.value)}
-                    placeholder="https://youtube.com/..."
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="h-9"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Main lesson video (YouTube, Vimeo, or direct URL)
+                    YouTube, Vimeo, or direct video URL
                   </p>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </DndContext>

@@ -52,13 +52,13 @@ export function CalloutBlock({ data, onChange, isEditing }: CalloutBlockProps) {
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Type</Label>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">Type</Label>
             <Select
               value={variant}
               onValueChange={(v) => onChange({ ...data, variant: v as CalloutVariant })}
             >
-              <SelectTrigger>
+              <SelectTrigger className="h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -74,19 +74,22 @@ export function CalloutBlock({ data, onChange, isEditing }: CalloutBlockProps) {
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="callout-title">Title (optional)</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="callout-title" className="text-xs font-medium text-muted-foreground">
+              Title (optional)
+            </Label>
             <Input
               id="callout-title"
               value={data.title || ''}
               onChange={(e) => onChange({ ...data, title: e.target.value })}
               placeholder="Callout title"
+              className="h-9"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="callout-content">Content</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="callout-content" className="text-xs font-medium text-muted-foreground">Content</Label>
           <Textarea
             id="callout-content"
             value={data.content}
@@ -96,8 +99,8 @@ export function CalloutBlock({ data, onChange, isEditing }: CalloutBlockProps) {
           />
         </div>
 
-        <div>
-          <p className="text-sm text-muted-foreground mb-2">Preview:</p>
+        <div className="pt-2">
+          <p className="text-xs font-medium text-muted-foreground mb-2">Preview</p>
           <CalloutPreview data={data} />
         </div>
       </div>
