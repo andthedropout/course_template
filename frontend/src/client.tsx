@@ -4,6 +4,11 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 
+// Load react-grab in development only
+if (import.meta.env.DEV) {
+  import('react-grab')
+}
+
 // Client-only rendering using TanStack Router
 const router = getRouter()
 createRoot(document.getElementById('root')!).render(

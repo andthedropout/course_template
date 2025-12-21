@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     "users",
     "themes",
     "blog",
+    "courses",
 ]
 
 MIDDLEWARE = [
@@ -287,3 +288,6 @@ MARKDOWNX_MARKDOWN_EXTENSIONS = [
     'markdown.extensions.toc',
 ]
 MARKDOWNX_IMAGE_MAX_SIZE = {'size': (1920, 1080), 'quality': 90}
+
+# Saleor webhook configuration
+SALEOR_WEBHOOK_SECRET = os.getenv('SALEOR_WEBHOOK_SECRET', '')

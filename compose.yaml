@@ -135,6 +135,116 @@ services:
     <<: *default-assets
     command: bash -c "sleep infinity"
 
+  # ============================================
+  # SALEOR E-COMMERCE SERVICES
+  # Start with: docker compose --profile saleor up
+  # ============================================
+
+  saleor-api:
+    image: ghcr.io/saleor/saleor:3.22
+    ports:
+      - "${SALEOR_API_PORT:-8800}:8000"
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    networks:
+      - saleor-backend
+    stdin_open: true
+    tty: true
+    depends_on:
+      - saleor-db
+      - saleor-cache
+      - jaeger
+    volumes:
+      - saleor-media:/app/media
+    env_file:
+      - "./saleor/common.env"
+      - "./saleor/backend.env"
+    environment:
+      - DASHBOARD_URL=http://localhost:${SALEOR_DASHBOARD_PORT:-9800}/
+      - ALLOWED_HOSTS=localhost,127.0.0.1,api,saleor-api
+    profiles: ["saleor"]
+
+  saleor-dashboard:
+    image: ghcr.io/saleor/saleor-dashboard:latest
+    ports:
+      - "${SALEOR_DASHBOARD_PORT:-9800}:80"
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    environment:
+      - API_URL=http://localhost:${SALEOR_API_PORT:-8800}/graphql/
+    profiles: ["saleor"]
+
+  saleor-db:
+    image: postgres:15-alpine
+    ports:
+      - "${SALEOR_DB_PORT:-5832}:5432"
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    networks:
+      - saleor-backend
+    volumes:
+      - saleor-db:/var/lib/postgresql/data
+      - ./saleor/replica_user.sql:/docker-entrypoint-initdb.d/replica_user.sql:ro
+    environment:
+      - POSTGRES_USER=saleor
+      - POSTGRES_PASSWORD=saleor
+    profiles: ["saleor"]
+
+  saleor-cache:
+    image: valkey/valkey:8.1-alpine
+    ports:
+      - "${SALEOR_REDIS_PORT:-6879}:6379"
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    networks:
+      - saleor-backend
+    volumes:
+      - saleor-cache:/data
+    profiles: ["saleor"]
+
+  saleor-worker:
+    image: ghcr.io/saleor/saleor:3.22
+    command: celery -A saleor --app=saleor.celeryconf:app worker --loglevel=info -B
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    networks:
+      - saleor-backend
+    env_file:
+      - "./saleor/common.env"
+      - "./saleor/backend.env"
+    depends_on:
+      - saleor-cache
+      - mailpit
+    volumes:
+      - saleor-media:/app/media
+    profiles: ["saleor"]
+
+  jaeger:
+    image: jaegertracing/jaeger
+    ports:
+      - "${JAEGER_UI_PORT:-16686}:16686"
+      - "4317:4317"
+      - "4318:4318"
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    networks:
+      - saleor-backend
+    volumes:
+      - type: tmpfs
+        target: /tmp
+    profiles: ["saleor"]
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1825}:1025"
+      - "${MAILPIT_UI_PORT:-8825}:8025"
+    restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+    networks:
+      - saleor-backend
+    profiles: ["saleor"]
+
 volumes:
   postgres: {}
   redis: {}
+  saleor-db: {}
+  saleor-cache: {}
+  saleor-media: {}
+
+networks:
+  saleor-backend:
+    driver: bridge

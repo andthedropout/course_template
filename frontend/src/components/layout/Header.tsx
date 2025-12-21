@@ -1,8 +1,8 @@
-import React from 'react';
 import { Link } from '@tanstack/react-router';
 import { ThemeToggle } from './ThemeToggle';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import { CartDrawer } from '@/components/cart/CartDrawer';
 
 export function Header() {
   const { user, isLoading } = useAuth();
@@ -16,15 +16,29 @@ export function Header() {
             Home
           </Link>
           <Link
+            to="/store"
+            className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+          >
+            Store
+          </Link>
+          <Link
             to="/blog"
             className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
           >
             Blog
           </Link>
+          {user && (
+            <Link
+              to="/app/dashboard"
+              className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+            >
+              My Courses
+            </Link>
+          )}
           {user?.is_staff && (
             <Link
               to="/blog/dashboard"
-              className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+              className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
             >
               CMS Dashboard
             </Link>
@@ -61,6 +75,8 @@ export function Header() {
               )}
             </>
           )}
+          {/* Cart Drawer */}
+          <CartDrawer />
           <ThemeToggle />
         </div>
       </div>

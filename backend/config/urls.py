@@ -48,6 +48,8 @@ api_patterns = [
     path("", include("themes.urls")),
     # Blog URLs
     path("blog/", include("blog.urls")),
+    # Courses URLs
+    path("courses/", include("courses.urls")),
 ]
 
 @ensure_csrf_cookie
