@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useCart } from '@/hooks/useCart';
+import { useCourseThumbnails } from '@/hooks/useCourseThumbnails';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import {
@@ -26,11 +27,14 @@ interface CartItemMiniProps {
   onRemove: (lineId: string) => void;
   onUpdateQuantity: (lineId: string, quantity: number) => void;
   isLoading?: boolean;
+  courseThumbnailUrl?: string;
 }
 
-function CartItemMini({ item, onRemove, onUpdateQuantity, isLoading }: CartItemMiniProps) {
+function CartItemMini({ item, onRemove, onUpdateQuantity, isLoading, courseThumbnailUrl }: CartItemMiniProps) {
   const product = item.variant.product;
   const price = item.totalPrice.gross;
+  // Prefer course thumbnail over Saleor thumbnail
+  const thumbnailUrl = courseThumbnailUrl || product.thumbnail?.url;
 
   return (
     <div className="flex gap-3 py-4 border-b last:border-b-0">
@@ -40,10 +44,10 @@ function CartItemMini({ item, onRemove, onUpdateQuantity, isLoading }: CartItemM
         className="shrink-0"
       >
         <div className="w-16 h-16 rounded-md overflow-hidden bg-muted">
-          {product.thumbnail?.url ? (
+          {thumbnailUrl ? (
             <img
-              src={product.thumbnail.url}
-              alt={product.thumbnail.alt || product.name}
+              src={thumbnailUrl}
+              alt={product.thumbnail?.alt || product.name}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -95,6 +99,7 @@ function CartItemMini({ item, onRemove, onUpdateQuantity, isLoading }: CartItemM
 
 export function CartDrawer() {
   const { items, itemCount, totalPrice, currency, removeItem, updateQuantity, isLoading } = useCart();
+  const { getThumbnail } = useCourseThumbnails();
   const [open, setOpen] = useState(false);
 
   // Listen for cartOpen event to open the drawer
@@ -157,6 +162,7 @@ export function CartDrawer() {
                   onRemove={removeItem}
                   onUpdateQuantity={updateQuantity}
                   isLoading={isLoading}
+                  courseThumbnailUrl={getThumbnail(item.variant.product.id)}
                 />
               ))}
             </div>

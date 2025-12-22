@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { parseEditorJSDescription } from '@/lib/editorjs';
 import { createCheckout } from '@/api/saleor';
 import { setCheckoutId } from '@/lib/saleor';
+import type { ProductWithCourseThumbnail } from '@/routes/store.$slug';
 
 function formatPrice(amount: number, currency: string): string {
   return new Intl.NumberFormat('en-US', {
@@ -17,11 +18,14 @@ function formatPrice(amount: number, currency: string): string {
 }
 
 export default function ProductDetail() {
-  const { product } = useLoaderData({ from: '/store/$slug' });
+  const { product } = useLoaderData({ from: '/store/$slug' }) as { product: ProductWithCourseThumbnail | null };
   const { addToCart, isLoading } = useCart();
   const navigate = useNavigate();
   const [addedToCart, setAddedToCart] = useState(false);
   const [isBuying, setIsBuying] = useState(false);
+
+  // Prefer course thumbnail over Saleor thumbnail
+  const thumbnailUrl = product?.courseThumbnailUrl || product?.thumbnail?.url;
 
   if (!product) {
     return (
@@ -96,10 +100,10 @@ export default function ProductDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Image */}
           <div className="aspect-video lg:aspect-square rounded-lg overflow-hidden bg-muted">
-            {product.thumbnail?.url ? (
+            {thumbnailUrl ? (
               <img
-                src={product.thumbnail.url}
-                alt={product.thumbnail.alt || product.name}
+                src={thumbnailUrl}
+                alt={product.thumbnail?.alt || product.name}
                 className="w-full h-full object-cover"
               />
             ) : (

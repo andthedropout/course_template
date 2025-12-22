@@ -35,6 +35,7 @@ export interface Course {
   title: string;
   slug: string;
   description: string;
+  long_description?: string;
   thumbnail_url?: string;
   saleor_product_id?: string;
   total_lessons: number;
@@ -56,6 +57,9 @@ export interface CourseStructure {
     id: number;
     title: string;
     slug: string;
+    description?: string;
+    long_description?: string;
+    thumbnail_url?: string;
   };
   is_enrolled: boolean;
   modules: Module[];
@@ -102,6 +106,37 @@ export async function checkEnrollment(slug: string): Promise<{ is_enrolled: bool
   return fetchWithAuth(`${API_BASE}/${slug}/check-enrollment/`);
 }
 
+// ============ Progress Tracking API ============
+
+export interface LessonProgressData {
+  completed: boolean;
+  video_position_seconds: number;
+}
+
+export interface CourseProgress {
+  completed_lesson_ids: number[];
+  total_lessons: number;
+  completed_count: number;
+  percentage: number;
+  next_lesson_slug: string | null;
+  lesson_progress: Record<number, LessonProgressData>;
+}
+
+export async function fetchCourseProgress(courseSlug: string): Promise<CourseProgress> {
+  return fetchWithAuth(`${API_BASE}/${courseSlug}/progress/`);
+}
+
+export async function updateLessonProgress(
+  courseSlug: string,
+  lessonSlug: string,
+  data: { completed?: boolean; video_position_seconds?: number }
+): Promise<{ completed: boolean; video_position_seconds: number; completed_at: string | null }> {
+  return fetchWithCsrf(`${API_BASE}/${courseSlug}/lessons/${lessonSlug}/progress/`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
 // ============ CMS API (Staff Only) ============
 
 async function fetchWithCsrf(url: string, options: RequestInit = {}) {
@@ -134,6 +169,7 @@ export interface CourseWrite {
   title: string;
   slug?: string;
   description?: string;
+  long_description?: string;
   thumbnail_url?: string;
   saleor_product_id?: string;
   status?: 'draft' | 'published';

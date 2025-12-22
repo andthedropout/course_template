@@ -17,7 +17,11 @@ class Course(models.Model):
     slug = models.SlugField(unique=True, max_length=255)
     description = MarkdownxField(
         blank=True,
-        help_text="Course description in Markdown"
+        help_text="Short course description for cards and listings"
+    )
+    long_description = MarkdownxField(
+        blank=True,
+        help_text="Detailed course overview - explains modules, structure, prerequisites"
     )
     thumbnail_url = models.CharField(
         max_length=500,
@@ -147,3 +151,35 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return f"{self.user.username} enrolled in {self.course.title}"
+
+
+class LessonProgress(models.Model):
+    """Tracks user progress through individual lessons."""
+    user = models.ForeignKey(
+        User,
+        related_name='lesson_progress',
+        on_delete=models.CASCADE
+    )
+    lesson = models.ForeignKey(
+        Lesson,
+        related_name='progress',
+        on_delete=models.CASCADE
+    )
+
+    # Completion tracking
+    completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    # Video resume position (in seconds)
+    video_position_seconds = models.IntegerField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['user', 'lesson']
+        verbose_name_plural = 'Lesson progress'
+
+    def __str__(self):
+        status = "✓" if self.completed else "○"
+        return f"{status} {self.user.username} - {self.lesson.title}"

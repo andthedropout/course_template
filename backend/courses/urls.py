@@ -37,4 +37,12 @@ urlpatterns = [
 
     # Enrollment check
     path('<slug:slug>/check-enrollment/', views.check_enrollment, name='check-enrollment'),
+
+    # Progress tracking
+    path('<slug:course_slug>/progress/', views.get_course_progress, name='course-progress'),
+    path(
+        '<slug:course_slug>/lessons/<slug:lesson_slug>/progress/',
+        views.update_lesson_progress,
+        name='lesson-progress'
+    ),
 ]

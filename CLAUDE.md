@@ -52,6 +52,43 @@ cd frontend && bun dev
 
 If the user reports connection errors (ERR_CONNECTION_RESET, wrong port), kill all processes and restart.
 
+## TanStack Router File-Based Routing
+
+This project uses TanStack Router with file-based routing. **CRITICAL RULES**:
+
+### Flat Routes with Underscore `_`
+To create sibling routes (not nested), use `_` in the filename to break the hierarchy:
+
+```
+app.courses.tsx         → /app/courses (MyCourses list)
+app.courses_.$slug.tsx  → /app/courses/$slug (CoursePlayer - SIBLING, not child)
+app.courses_.$slug_.$lessonSlug.tsx → /app/courses/$slug/$lessonSlug (LessonView)
+```
+
+The underscore `_` breaks nesting. Without it, `app.courses.$slug.tsx` would be a CHILD of `app.courses.tsx` and require an `<Outlet />`.
+
+### Route ID vs URL Path
+- Route ID includes underscores: `/app/courses_/$slug_/$lessonSlug`
+- URL path is clean: `/app/courses/$slug/$lessonSlug`
+- `useParams()` MUST use the route ID: `useParams({ from: '/app/courses_/$slug_/$lessonSlug' })`
+
+### When Renaming Route Files
+**ALWAYS do ALL of these steps** after renaming/creating/deleting route files:
+```bash
+# 1. Delete stale routeTree
+rm frontend/src/routeTree.gen.ts
+
+# 2. Kill ALL dev servers
+pkill -9 -f vite; pkill -9 -f "bun.*dev"
+
+# 3. Start fresh
+cd frontend && bun dev
+```
+
+# 4. Tell user to HARD REFRESH browser (Cmd+Shift+R / Ctrl+Shift+R)
+
+**ALL FOUR STEPS ARE REQUIRED.** Skipping any step causes 404 errors or stale cached routes.
+
 ## Tailwind CSS v4 Notes
 
 This project uses **Tailwind CSS v4** which has syntax changes from v3:

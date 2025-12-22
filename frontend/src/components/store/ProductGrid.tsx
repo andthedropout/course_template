@@ -1,8 +1,7 @@
-import type { Product } from '@/api/saleor';
-import { ProductCard } from './ProductCard';
+import { ProductCard, type ProductWithCourseThumbnail } from './ProductCard';
 
 interface ProductGridProps {
-  products: Product[];
+  products: ProductWithCourseThumbnail[];
 }
 
 export function ProductGrid({ products }: ProductGridProps) {

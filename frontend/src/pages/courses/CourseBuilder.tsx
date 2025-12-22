@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import {
   fetchCourseForEdit,
@@ -14,6 +14,7 @@ import {
   CourseFull,
   Module,
 } from '@/api/courses';
+import { uploadBlogImage } from '@/api/blog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -64,9 +65,15 @@ export default function CourseBuilder() {
   // Course settings form
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [longDescription, setLongDescription] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [saleorProductId, setSaleorProductId] = useState('');
   const [status, setStatus] = useState<'draft' | 'published'>('draft');
+
+  // Thumbnail upload
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+  const [isDraggingThumbnail, setIsDraggingThumbnail] = useState(false);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   // Module/Lesson modals
   const [newModuleOpen, setNewModuleOpen] = useState(false);
@@ -100,6 +107,7 @@ export default function CourseBuilder() {
       setCourse(data);
       setTitle(data.title);
       setDescription(data.description || '');
+      setLongDescription(data.long_description || '');
       setThumbnailUrl(data.thumbnail_url || '');
       setSaleorProductId(data.saleor_product_id || '');
       setStatus(data.status);
@@ -118,11 +126,13 @@ export default function CourseBuilder() {
       const updated = await updateCourse(slug, {
         title,
         description,
+        long_description: longDescription,
         thumbnail_url: thumbnailUrl,
         saleor_product_id: saleorProductId,
         status,
       });
-      setCourse(updated);
+      // Preserve modules since the PATCH endpoint may not return them
+      setCourse((prev) => prev ? { ...prev, ...updated, modules: prev.modules } : updated);
       toast({ title: 'Saved', description: 'Course settings saved.' });
       // If slug changed, redirect
       if (updated.slug !== slug) {
@@ -310,7 +320,7 @@ export default function CourseBuilder() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" asChild className="gap-1.5">
-            <Link to={`/app/courses/${slug}`} target="_blank">
+            <Link to={`/app/courses/${slug}/`} target="_blank">
               <Icon name="Eye" className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Preview</span>
             </Link>
@@ -416,24 +426,120 @@ export default function CourseBuilder() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-xs font-medium">Description</Label>
+                <Label htmlFor="description" className="text-xs font-medium">Short Description</Label>
                 <textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full min-h-[80px] px-3 py-2 text-sm border rounded-lg bg-background resize-none"
-                  placeholder="What will students learn?"
+                  placeholder="Brief description for course cards"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="thumbnail" className="text-xs font-medium">Thumbnail URL</Label>
-                <Input
-                  id="thumbnail"
-                  value={thumbnailUrl}
-                  onChange={(e) => setThumbnailUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="h-9"
+                <Label htmlFor="long-description" className="text-xs font-medium">Long Description</Label>
+                <textarea
+                  id="long-description"
+                  value={longDescription}
+                  onChange={(e) => setLongDescription(e.target.value)}
+                  className="w-full min-h-[160px] px-3 py-2 text-sm border rounded-lg bg-background resize-y font-mono"
+                  placeholder="Detailed course overview - explain modules, structure, prerequisites... (Markdown supported)"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Supports Markdown formatting
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs font-medium">Thumbnail</Label>
+                {thumbnailUrl ? (
+                  <div className="relative group">
+                    <img
+                      src={thumbnailUrl}
+                      alt="Course thumbnail"
+                      className="w-full h-32 object-cover rounded-lg border"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => thumbnailInputRef.current?.click()}
+                      >
+                        <Icon name="Upload" className="h-4 w-4 mr-1" />
+                        Replace
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => setThumbnailUrl('')}
+                      >
+                        <Icon name="Trash2" className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={cn(
+                      "border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer",
+                      isDraggingThumbnail
+                        ? "border-primary bg-primary/5"
+                        : "border-muted-foreground/25 hover:border-primary",
+                      isUploadingThumbnail && "opacity-50 pointer-events-none"
+                    )}
+                    onDrop={async (e) => {
+                      e.preventDefault();
+                      setIsDraggingThumbnail(false);
+                      const file = e.dataTransfer.files[0];
+                      if (!file?.type.startsWith('image/')) return;
+                      setIsUploadingThumbnail(true);
+                      try {
+                        const result = await uploadBlogImage(file);
+                        setThumbnailUrl(result.url);
+                        toast({ title: 'Uploaded', description: 'Thumbnail uploaded' });
+                      } catch {
+                        toast({ title: 'Error', description: 'Failed to upload', variant: 'destructive' });
+                      } finally {
+                        setIsUploadingThumbnail(false);
+                      }
+                    }}
+                    onDragOver={(e) => { e.preventDefault(); setIsDraggingThumbnail(true); }}
+                    onDragLeave={(e) => { e.preventDefault(); setIsDraggingThumbnail(false); }}
+                    onClick={() => thumbnailInputRef.current?.click()}
+                  >
+                    {isUploadingThumbnail ? (
+                      <Icon name="Loader2" className="h-8 w-8 mx-auto text-muted-foreground animate-spin" />
+                    ) : (
+                      <>
+                        <Icon name="Upload" className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground">
+                          Drop image or click to upload
+                        </p>
+                      </>
+                    )}
+                  </div>
+                )}
+                <input
+                  ref={thumbnailInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setIsUploadingThumbnail(true);
+                    try {
+                      const result = await uploadBlogImage(file);
+                      setThumbnailUrl(result.url);
+                      toast({ title: 'Uploaded', description: 'Thumbnail uploaded' });
+                    } catch {
+                      toast({ title: 'Error', description: 'Failed to upload', variant: 'destructive' });
+                    } finally {
+                      setIsUploadingThumbnail(false);
+                      e.target.value = '';
+                    }
+                  }}
                 />
               </div>
             </div>

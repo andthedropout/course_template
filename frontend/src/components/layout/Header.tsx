@@ -1,11 +1,16 @@
 import { Link } from '@tanstack/react-router';
 import { ThemeToggle } from './ThemeToggle';
 import { useAuth } from '@/hooks/useAuth';
+import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 
 export function Header() {
   const { user, isLoading } = useAuth();
+  const { itemCount } = useCart();
+
+  // Show cart if: not logged in, OR logged in with items in cart
+  const showCart = !user || itemCount > 0;
 
   return (
     <header className="sticky top-0 z-9999 w-full border-b border-border bg-background/80 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
@@ -83,8 +88,8 @@ export function Header() {
               )}
             </>
           )}
-          {/* Cart Drawer */}
-          <CartDrawer />
+          {/* Cart Drawer - show if not logged in, or if logged in with items */}
+          {!isLoading && showCart && <CartDrawer />}
           <ThemeToggle />
         </div>
       </div>

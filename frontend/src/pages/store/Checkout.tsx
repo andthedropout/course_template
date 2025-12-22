@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
 import { SEO } from '@/components/SEO';
@@ -63,6 +63,8 @@ export default function Checkout() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [transactionId, setTransactionId] = useState<string | null>(null);
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
+  const [paymentInitError, setPaymentInitError] = useState<string | null>(null);
+  const paymentInitAttemptedRef = useRef(false);
 
   // Pre-fill email from user when authenticated
   useEffect(() => {
@@ -82,7 +84,13 @@ export default function Checkout() {
   useEffect(() => {
     const initializePayment = async () => {
       const checkoutId = getCheckoutId();
-      if (!checkoutId || !totalPrice || clientSecret || isInitializingPayment) return;
+      if (!checkoutId || !totalPrice || clientSecret) return;
+
+      // Prevent duplicate initialization (especially in React StrictMode)
+      if (paymentInitAttemptedRef.current) {
+        return;
+      }
+      paymentInitAttemptedRef.current = true;
 
       setIsInitializingPayment(true);
       try {
@@ -91,16 +99,17 @@ export default function Checkout() {
         setTransactionId(result.transactionId);
       } catch (err) {
         console.error('Failed to initialize payment:', err);
-        // Don't show error here, user hasn't started checkout yet
+        // Store error but don't show to user yet - they can still fill out form
+        setPaymentInitError(err instanceof Error ? err.message : 'Payment initialization failed');
       } finally {
         setIsInitializingPayment(false);
       }
     };
 
-    if (!isCartLoading && items.length > 0) {
+    if (!isCartLoading && items.length > 0 && !paymentInitAttemptedRef.current) {
       initializePayment();
     }
-  }, [isCartLoading, items.length, totalPrice, clientSecret, isInitializingPayment]);
+  }, [isCartLoading, items.length, totalPrice, clientSecret]);
 
   // Handle saved address selection
   const handleAddressSelect = (addr: UserAddress | null) => {
@@ -330,6 +339,21 @@ export default function Checkout() {
                   <div className="flex items-center justify-center py-8">
                     <Icon name="Loader2" className="h-6 w-6 animate-spin text-muted-foreground" />
                     <span className="ml-2 text-muted-foreground">Preparing checkout...</span>
+                  </div>
+                ) : paymentInitError ? (
+                  <div className="p-6 border border-destructive/20 bg-destructive/5 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <Icon name="AlertCircle" className="h-5 w-5 text-destructive mt-0.5" />
+                      <div>
+                        <h3 className="font-medium text-destructive">Payment System Unavailable</h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          The payment system is not configured. Please contact support or try again later.
+                        </p>
+                        <p className="text-xs text-muted-foreground/70 mt-2 font-mono">
+                          {paymentInitError}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <StripeProvider amount={totalPrice} currency={currency}>

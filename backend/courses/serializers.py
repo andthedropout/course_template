@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Module, Lesson, Enrollment
+from .models import Course, Module, Lesson, Enrollment, LessonProgress
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -58,8 +58,8 @@ class CourseListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
-            'id', 'title', 'slug', 'description', 'thumbnail_url',
-            'total_lessons', 'total_duration_minutes', 'created_at'
+            'id', 'title', 'slug', 'description', 'long_description',
+            'thumbnail_url', 'saleor_product_id', 'total_lessons', 'total_duration_minutes', 'created_at'
         ]
 
 
@@ -72,9 +72,9 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
-            'id', 'title', 'slug', 'description', 'thumbnail_url',
-            'saleor_product_id', 'total_lessons', 'total_duration_minutes',
-            'modules', 'created_at', 'updated_at'
+            'id', 'title', 'slug', 'description', 'long_description',
+            'thumbnail_url', 'saleor_product_id', 'total_lessons',
+            'total_duration_minutes', 'modules', 'created_at', 'updated_at'
         ]
 
 
@@ -110,8 +110,8 @@ class CourseWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
-            'id', 'title', 'slug', 'description', 'thumbnail_url',
-            'saleor_product_id', 'status'
+            'id', 'title', 'slug', 'description', 'long_description',
+            'thumbnail_url', 'saleor_product_id', 'status'
         ]
         read_only_fields = ['id']
 
@@ -125,8 +125,8 @@ class CourseFullSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
-            'id', 'title', 'slug', 'description', 'thumbnail_url',
-            'saleor_product_id', 'status', 'total_lessons',
+            'id', 'title', 'slug', 'description', 'long_description',
+            'thumbnail_url', 'saleor_product_id', 'status', 'total_lessons',
             'total_duration_minutes', 'modules', 'created_at', 'updated_at'
         ]
 
@@ -146,3 +146,30 @@ class ReorderLessonsSerializer(serializers.Serializer):
     """Serializer for reordering lessons within a module."""
     module_id = serializers.IntegerField()
     lessons = ReorderItemSerializer(many=True)
+
+
+# ============ Progress Tracking Serializers ============
+
+class LessonProgressSerializer(serializers.ModelSerializer):
+    """Serializer for individual lesson progress."""
+
+    class Meta:
+        model = LessonProgress
+        fields = ['completed', 'video_position_seconds', 'completed_at', 'updated_at']
+        read_only_fields = ['completed_at', 'updated_at']
+
+
+class LessonProgressUpdateSerializer(serializers.Serializer):
+    """Serializer for updating lesson progress."""
+    completed = serializers.BooleanField(required=False)
+    video_position_seconds = serializers.IntegerField(required=False, min_value=0)
+
+
+class CourseProgressSerializer(serializers.Serializer):
+    """Serializer for course progress summary."""
+    completed_lesson_ids = serializers.ListField(child=serializers.IntegerField())
+    total_lessons = serializers.IntegerField()
+    completed_count = serializers.IntegerField()
+    percentage = serializers.IntegerField()
+    next_lesson_slug = serializers.CharField(allow_null=True)
+    lesson_progress = serializers.DictField()

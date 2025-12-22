@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Icon } from '@/components/ui/icon';
 import { type StoredPaymentMethod, fetchCheckoutStoredPaymentMethods } from '@/api/saleor/queries';
 import { cn } from '@/lib/utils';
@@ -30,12 +30,19 @@ export function SavedPaymentMethodSelector({
   const [paymentMethods, setPaymentMethods] = useState<StoredPaymentMethod[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const fetchAttemptedRef = useRef(false);
 
   useEffect(() => {
     if (!isAuthenticated || !checkoutId) {
       setIsLoading(false);
       return;
     }
+
+    // Prevent duplicate fetches (especially in React StrictMode)
+    if (fetchAttemptedRef.current) {
+      return;
+    }
+    fetchAttemptedRef.current = true;
 
     fetchCheckoutStoredPaymentMethods(checkoutId)
       .then((data) => {
@@ -47,7 +54,8 @@ export function SavedPaymentMethodSelector({
       })
       .catch((err) => {
         console.error('Failed to fetch payment methods:', err);
-        setError('Failed to load saved payment methods');
+        // Don't show error - just means no saved methods available
+        // setError('Failed to load saved payment methods');
       })
       .finally(() => {
         setIsLoading(false);

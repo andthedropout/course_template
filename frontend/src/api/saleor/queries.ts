@@ -133,6 +133,10 @@ const PRODUCTS_QUERY = `
               }
             }
           }
+          variants {
+            id
+            name
+          }
         }
       }
     }

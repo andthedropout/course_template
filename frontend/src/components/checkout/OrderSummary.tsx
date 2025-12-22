@@ -1,4 +1,5 @@
 import type { CheckoutLine } from '@/api/saleor';
+import { useCourseThumbnails } from '@/hooks/useCourseThumbnails';
 
 interface OrderSummaryProps {
   items: CheckoutLine[];
@@ -14,40 +15,46 @@ function formatPrice(amount: number, currency: string): string {
 }
 
 export function OrderSummary({ items, totalPrice, currency }: OrderSummaryProps) {
+  const { getThumbnail } = useCourseThumbnails();
+
   return (
     <div className="space-y-6">
       {/* Items */}
       <div className="space-y-4">
-        {items.map((item) => (
-          <div key={item.id} className="flex gap-4">
-            <div className="relative w-16 h-16 rounded-lg bg-muted shrink-0 border border-border/50">
-              {item.variant.product.thumbnail?.url ? (
-                <img
-                  src={item.variant.product.thumbnail.url}
-                  alt={item.variant.product.name}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-                  No image
-                </div>
-              )}
-              {/* Quantity badge */}
-              <span className="absolute -top-2 -right-2 z-10 w-5 h-5 bg-muted-foreground text-background text-xs font-medium rounded-full flex items-center justify-center">
-                {item.quantity}
-              </span>
+        {items.map((item) => {
+          // Prefer course thumbnail over Saleor thumbnail
+          const thumbnailUrl = getThumbnail(item.variant.product.id) || item.variant.product.thumbnail?.url;
+          return (
+            <div key={item.id} className="flex gap-4">
+              <div className="relative w-16 h-16 rounded-lg bg-muted shrink-0 border border-border/50">
+                {thumbnailUrl ? (
+                  <img
+                    src={thumbnailUrl}
+                    alt={item.variant.product.name}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
+                    No image
+                  </div>
+                )}
+                {/* Quantity badge */}
+                <span className="absolute -top-2 -right-2 z-10 w-5 h-5 bg-muted-foreground text-background text-xs font-medium rounded-full flex items-center justify-center">
+                  {item.quantity}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-sm truncate">{item.variant.product.name}</p>
+                {item.variant.name !== item.variant.product.name && (
+                  <p className="text-xs text-muted-foreground">{item.variant.name}</p>
+                )}
+              </div>
+              <p className="font-medium text-sm">
+                {formatPrice(item.totalPrice.gross.amount, item.totalPrice.gross.currency)}
+              </p>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm truncate">{item.variant.product.name}</p>
-              {item.variant.name !== item.variant.product.name && (
-                <p className="text-xs text-muted-foreground">{item.variant.name}</p>
-              )}
-            </div>
-            <p className="font-medium text-sm">
-              {formatPrice(item.totalPrice.gross.amount, item.totalPrice.gross.currency)}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Discount code */}

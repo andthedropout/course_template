@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useAuth } from '@/hooks/useAuth';
-import { fetchMyEnrollments, type Enrollment } from '@/api/courses';
+import { fetchMyEnrollments, fetchCourseProgress, type Enrollment, type CourseProgress } from '@/api/courses';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
@@ -10,6 +10,7 @@ import PageWrapper from '@/components/layout/PageWrapper';
 export default function Dashboard() {
   const { user } = useAuth();
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [progressMap, setProgressMap] = useState<Record<string, CourseProgress>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -17,6 +18,25 @@ export default function Dashboard() {
       try {
         const data = await fetchMyEnrollments();
         setEnrollments(data);
+
+        // Fetch progress for all courses in parallel
+        const progressPromises = data.map(async (enrollment) => {
+          try {
+            const progress = await fetchCourseProgress(enrollment.course.slug);
+            return { slug: enrollment.course.slug, progress };
+          } catch {
+            return null;
+          }
+        });
+
+        const progressResults = await Promise.all(progressPromises);
+        const progressData: Record<string, CourseProgress> = {};
+        progressResults.forEach((result) => {
+          if (result) {
+            progressData[result.slug] = result.progress;
+          }
+        });
+        setProgressMap(progressData);
       } catch (error) {
         console.error('Failed to load enrollments:', error);
       } finally {
@@ -102,32 +122,67 @@ export default function Dashboard() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {enrollments.slice(0, 3).map((enrollment) => (
-              <Card key={enrollment.id} className="overflow-hidden">
-                {enrollment.course.thumbnail_url && (
-                  <div className="aspect-video bg-muted">
-                    <img
-                      src={enrollment.course.thumbnail_url}
-                      alt={enrollment.course.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <CardHeader>
-                  <CardTitle className="line-clamp-1">{enrollment.course.title}</CardTitle>
-                  <CardDescription>
-                    {enrollment.course.total_lessons} lessons · {Math.round(enrollment.course.total_duration_minutes / 60)}h
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild className="w-full">
-                    <Link to={`/app/courses/${enrollment.course.slug}`}>
-                      Continue Learning
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+            {enrollments.slice(0, 3).map((enrollment) => {
+              const progress = progressMap[enrollment.course.slug];
+              const percentage = progress?.percentage || 0;
+              const hasStarted = percentage > 0;
+              const nextLessonSlug = progress?.next_lesson_slug;
+
+              return (
+                <Link
+                  key={enrollment.id}
+                  to={nextLessonSlug
+                    ? `/app/courses/${enrollment.course.slug}/${nextLessonSlug}`
+                    : `/app/courses/${enrollment.course.slug}`
+                  }
+                  className="block group"
+                >
+                  <Card className="overflow-hidden transition-all hover:shadow-lg hover:border-primary/50">
+                    {enrollment.course.thumbnail_url && (
+                      <div className="aspect-video bg-muted relative">
+                        <img
+                          src={enrollment.course.thumbnail_url}
+                          alt={enrollment.course.title}
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                        />
+                        {/* Progress overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/20">
+                          <div
+                            className="h-full bg-primary transition-all duration-300"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <CardHeader>
+                      <CardTitle className="line-clamp-1 group-hover:text-primary transition-colors">
+                        {enrollment.course.title}
+                      </CardTitle>
+                      <CardDescription>
+                        {enrollment.course.total_lessons} lessons · {Math.round(enrollment.course.total_duration_minutes / 60)}h
+                      </CardDescription>
+                      {progress && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {percentage === 100 ? (
+                            <span className="text-primary flex items-center gap-1">
+                              <Icon name="CheckCircle2" className="h-3 w-3" />
+                              Completed
+                            </span>
+                          ) : (
+                            `${percentage}% complete`
+                          )}
+                        </p>
+                      )}
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full">
+                        {percentage === 100 ? 'Review Course' : hasStarted ? 'Continue Learning' : 'Start Course'}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

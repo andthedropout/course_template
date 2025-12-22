@@ -8,6 +8,7 @@ interface CartItemProps {
   onUpdateQuantity: (lineId: string, quantity: number) => void;
   onRemove: (lineId: string) => void;
   isLoading?: boolean;
+  courseThumbnailUrl?: string;
 }
 
 function formatPrice(amount: number, currency: string): string {
@@ -17,9 +18,11 @@ function formatPrice(amount: number, currency: string): string {
   }).format(amount);
 }
 
-export function CartItem({ item, onUpdateQuantity, onRemove, isLoading }: CartItemProps) {
+export function CartItem({ item, onUpdateQuantity, onRemove, isLoading, courseThumbnailUrl }: CartItemProps) {
   const product = item.variant.product;
   const price = item.totalPrice.gross;
+  // Prefer course thumbnail over Saleor thumbnail
+  const thumbnailUrl = courseThumbnailUrl || product.thumbnail?.url;
 
   return (
     <div className="flex gap-4 py-4 border-b last:border-b-0">
@@ -30,10 +33,10 @@ export function CartItem({ item, onUpdateQuantity, onRemove, isLoading }: CartIt
         className="shrink-0"
       >
         <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted">
-          {product.thumbnail?.url ? (
+          {thumbnailUrl ? (
             <img
-              src={product.thumbnail.url}
-              alt={product.thumbnail.alt || product.name}
+              src={thumbnailUrl}
+              alt={product.thumbnail?.alt || product.name}
               className="w-full h-full object-cover"
             />
           ) : (
