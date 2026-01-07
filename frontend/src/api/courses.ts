@@ -9,6 +9,18 @@ export interface LessonBlock {
   data: Record<string, unknown>;
 }
 
+export interface BunnyVideo {
+  id: number;
+  guid: string;
+  title: string;
+  duration_seconds: number | null;
+  thumbnail_url: string;
+  thumbnail_blurhash?: string;
+  status: 'uploading' | 'processing' | 'ready' | 'failed';
+  file_size_bytes: number | null;
+  created_at: string;
+}
+
 export interface Lesson {
   id: number;
   title: string;
@@ -16,6 +28,8 @@ export interface Lesson {
   content?: string;
   blocks?: LessonBlock[];
   video_url?: string;
+  bunny_video?: BunnyVideo | null;
+  signed_video_url?: string | null;
   duration_minutes: number;
   order: number;
   is_free_preview: boolean;
@@ -30,6 +44,20 @@ export interface Module {
   lessons: Lesson[];
 }
 
+export interface Tag {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export interface CoursePrerequisite {
+  id: number;
+  required_course_id: number;
+  required_course_title: string;
+  required_course_slug: string;
+  enforcement: 'recommended' | 'required';
+}
+
 export interface Course {
   id: number;
   title: string;
@@ -41,6 +69,10 @@ export interface Course {
   total_lessons: number;
   total_duration_minutes: number;
   modules?: Module[];
+  difficulty?: 'beginner' | 'intermediate' | 'advanced' | null;
+  learning_objectives?: string[];
+  tags?: Tag[];
+  prerequisites?: CoursePrerequisite[];
   created_at: string;
   updated_at?: string;
 }
@@ -60,6 +92,10 @@ export interface CourseStructure {
     description?: string;
     long_description?: string;
     thumbnail_url?: string;
+    difficulty?: 'beginner' | 'intermediate' | 'advanced' | null;
+    learning_objectives?: string[];
+    tags?: Tag[];
+    prerequisites?: CoursePrerequisite[];
   };
   is_enrolled: boolean;
   modules: Module[];
@@ -173,6 +209,9 @@ export interface CourseWrite {
   thumbnail_url?: string;
   saleor_product_id?: string;
   status?: 'draft' | 'published';
+  difficulty?: 'beginner' | 'intermediate' | 'advanced' | null;
+  learning_objectives?: string[];
+  tag_ids?: number[];
 }
 
 export interface CourseFull extends Course {
@@ -240,6 +279,7 @@ export interface LessonWrite {
   slug?: string;
   blocks?: LessonBlock[];
   video_url?: string;
+  bunny_video_id?: number | null;
   duration_minutes?: number;
   order?: number;
   is_free_preview?: boolean;
@@ -282,4 +322,116 @@ export async function reorderLessons(courseSlug: string, moduleId: number, lesso
     method: 'POST',
     body: JSON.stringify({ module_id: moduleId, lessons }),
   });
+}
+
+// ============ Bunny Video API (Staff Only) ============
+
+export interface BunnyUploadInit {
+  video_id: number;
+  guid: string;
+  tus_upload_url: string;
+  library_id: string;
+  tus_headers: {
+    AuthorizationSignature: string;
+    AuthorizationExpire: string;
+    VideoId: string;
+    LibraryId: string;
+  };
+}
+
+export interface BunnyVideoStatus {
+  id: number;
+  status: 'uploading' | 'processing' | 'ready' | 'failed';
+  duration_seconds: number | null;
+  thumbnail_url: string;
+}
+
+export async function fetchBunnyVideos(): Promise<BunnyVideo[]> {
+  return fetchWithAuth(`${API_BASE}/videos/`);
+}
+
+export async function initBunnyUpload(title: string): Promise<BunnyUploadInit> {
+  return fetchWithCsrf(`${API_BASE}/videos/upload/`, {
+    method: 'POST',
+    body: JSON.stringify({ title }),
+  });
+}
+
+export async function confirmBunnyUpload(videoId: number): Promise<BunnyVideo> {
+  return fetchWithCsrf(`${API_BASE}/videos/${videoId}/confirm/`, {
+    method: 'POST',
+  });
+}
+
+export async function checkBunnyVideoStatus(videoId: number): Promise<BunnyVideoStatus> {
+  return fetchWithAuth(`${API_BASE}/videos/${videoId}/status/`);
+}
+
+export async function deleteBunnyVideo(videoId: number): Promise<void> {
+  await fetchWithCsrf(`${API_BASE}/videos/${videoId}/`, {
+    method: 'DELETE',
+  });
+}
+
+// ============ Tags API ============
+
+export async function fetchTags(): Promise<Tag[]> {
+  return fetchWithAuth('/api/v1/blog/tags/');
+}
+
+// ============ Prerequisites API ============
+
+export async function addPrerequisite(
+  courseSlug: string,
+  data: { required_course_id: number; enforcement: 'recommended' | 'required' }
+): Promise<CoursePrerequisite> {
+  return fetchWithCsrf(`${API_BASE}/cms/${courseSlug}/prerequisites/`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function removePrerequisite(courseSlug: string, prerequisiteId: number): Promise<void> {
+  await fetchWithCsrf(`${API_BASE}/cms/${courseSlug}/prerequisites/${prerequisiteId}/`, {
+    method: 'DELETE',
+  });
+}
+
+// ============ File Upload API ============
+
+export interface UploadedFile {
+  id: string;
+  url: string;
+  name: string;
+  size: number;
+  type: string;
+}
+
+export async function uploadCourseFile(file: File): Promise<UploadedFile> {
+  const csrfToken = getCSRFToken();
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch('/api/v1/blog/upload-image/', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'X-CSRFToken': csrfToken || '',
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || `Upload failed: ${response.status}`);
+  }
+
+  const result = await response.json();
+  return {
+    id: crypto.randomUUID(),
+    url: result.url,
+    name: file.name,
+    size: file.size,
+    type: file.type,
+  };
 }

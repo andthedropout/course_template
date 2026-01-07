@@ -5,6 +5,8 @@ import { fetchCourses, fetchMyEnrollments } from '@/api/courses';
 
 export type ProductWithCourseThumbnail = Product & {
   courseThumbnailUrl?: string;
+  courseSlug?: string;
+  isOwned?: boolean;
 };
 
 export const Route = createFileRoute('/store/')({
@@ -18,15 +20,18 @@ export const Route = createFileRoute('/store/')({
         fetchMyEnrollments().catch(() => []), // Fails silently if not auth'd
       ]);
 
-      // Create a map of saleor_product_id → course.thumbnail_url
-      const courseThumbnailMap = new Map<string, string>();
+      // Create maps for course data
+      const courseDataMap = new Map<string, { thumbnailUrl?: string; slug: string }>();
       for (const course of courses) {
-        if (course.saleor_product_id && course.thumbnail_url) {
-          courseThumbnailMap.set(course.saleor_product_id, course.thumbnail_url);
+        if (course.saleor_product_id) {
+          courseDataMap.set(course.saleor_product_id, {
+            thumbnailUrl: course.thumbnail_url,
+            slug: course.slug,
+          });
         }
       }
 
-      // Build set of enrolled product IDs to filter out
+      // Build set of enrolled product IDs
       const enrolledProductIds = new Set<string>();
       for (const enrollment of enrollments) {
         if (enrollment.course.saleor_product_id) {
@@ -34,13 +39,16 @@ export const Route = createFileRoute('/store/')({
         }
       }
 
-      // Filter out enrolled courses and enrich with thumbnails
-      const enrichedProducts: ProductWithCourseThumbnail[] = products
-        .filter((product) => !enrolledProductIds.has(product.id))
-        .map((product) => ({
+      // Enrich products with ownership info and thumbnails
+      const enrichedProducts: ProductWithCourseThumbnail[] = products.map((product) => {
+        const courseData = courseDataMap.get(product.id);
+        return {
           ...product,
-          courseThumbnailUrl: courseThumbnailMap.get(product.id),
-        }));
+          courseThumbnailUrl: courseData?.thumbnailUrl,
+          courseSlug: courseData?.slug,
+          isOwned: enrolledProductIds.has(product.id),
+        };
+      });
 
       return { products: enrichedProducts };
     } catch (error) {

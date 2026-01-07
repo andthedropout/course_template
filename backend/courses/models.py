@@ -6,11 +6,57 @@ from markdownx.models import MarkdownxField
 User = get_user_model()
 
 
+class BunnyVideo(models.Model):
+    """Tracks videos uploaded to Bunny Stream."""
+    VIDEO_STATUS_CHOICES = [
+        ('uploading', 'Uploading'),
+        ('processing', 'Processing'),
+        ('ready', 'Ready'),
+        ('failed', 'Failed'),
+    ]
+
+    guid = models.CharField(
+        max_length=36,
+        unique=True,
+        help_text="Bunny Stream video GUID"
+    )
+    title = models.CharField(max_length=200)
+    duration_seconds = models.IntegerField(null=True, blank=True)
+    thumbnail_url = models.URLField(blank=True)
+    thumbnail_blurhash = models.CharField(max_length=100, blank=True, help_text="Blurhash placeholder for thumbnail")
+    status = models.CharField(
+        max_length=20,
+        choices=VIDEO_STATUS_CHOICES,
+        default='uploading'
+    )
+    file_size_bytes = models.BigIntegerField(null=True, blank=True)
+    uploaded_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='uploaded_videos'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} ({self.guid})"
+
+
 class Course(models.Model):
     """A course that can be purchased through Saleor and accessed by enrolled users."""
     STATUS_CHOICES = [
         ('draft', 'Draft'),
         ('published', 'Published'),
+    ]
+
+    DIFFICULTY_CHOICES = [
+        ('beginner', 'Beginner'),
+        ('intermediate', 'Intermediate'),
+        ('advanced', 'Advanced'),
     ]
 
     title = models.CharField(max_length=200)
@@ -38,6 +84,27 @@ class Course(models.Model):
         choices=STATUS_CHOICES,
         default='draft'
     )
+
+    # New optional metadata fields
+    difficulty = models.CharField(
+        max_length=20,
+        choices=DIFFICULTY_CHOICES,
+        blank=True,
+        null=True,
+        help_text="Difficulty level (optional)"
+    )
+    learning_objectives = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="List of learning objectives (optional)"
+    )
+    tags = models.ManyToManyField(
+        'blog.Tag',
+        blank=True,
+        related_name='courses',
+        help_text="Tags for categorization (optional)"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -102,7 +169,15 @@ class Lesson(models.Model):
     video_url = models.CharField(
         max_length=500,
         blank=True,
-        help_text="External video URL (YouTube, Vimeo, Bunny, etc.)"
+        help_text="External video URL (YouTube, Vimeo, etc.)"
+    )
+    bunny_video = models.ForeignKey(
+        'BunnyVideo',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='lessons',
+        help_text="Bunny Stream video (takes precedence over video_url)"
     )
     duration_minutes = models.IntegerField(
         default=0,
@@ -183,3 +258,37 @@ class LessonProgress(models.Model):
     def __str__(self):
         status = "✓" if self.completed else "○"
         return f"{status} {self.user.username} - {self.lesson.title}"
+
+
+class CoursePrerequisite(models.Model):
+    """Defines prerequisite relationships between courses."""
+    ENFORCEMENT_CHOICES = [
+        ('recommended', 'Recommended'),
+        ('required', 'Required'),
+    ]
+
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='prerequisites',
+        help_text="The course that has prerequisites"
+    )
+    required_course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='is_prerequisite_for',
+        help_text="The course that must be completed first"
+    )
+    enforcement = models.CharField(
+        max_length=20,
+        choices=ENFORCEMENT_CHOICES,
+        default='recommended',
+        help_text="Whether the prerequisite is recommended or required"
+    )
+
+    class Meta:
+        unique_together = ['course', 'required_course']
+        ordering = ['enforcement', 'required_course__title']
+
+    def __str__(self):
+        return f"{self.course.title} requires {self.required_course.title} ({self.enforcement})"

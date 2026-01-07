@@ -291,3 +291,10 @@ MARKDOWNX_IMAGE_MAX_SIZE = {'size': (1920, 1080), 'quality': 90}
 
 # Saleor webhook configuration
 SALEOR_WEBHOOK_SECRET = os.getenv('SALEOR_WEBHOOK_SECRET', '')
+
+# Bunny Stream video hosting configuration
+# Get these from Bunny.net dashboard > Stream > Video Library
+BUNNY_STREAM_LIBRARY_ID = os.getenv('BUNNY_STREAM_LIBRARY_ID', '')
+BUNNY_STREAM_API_KEY = os.getenv('BUNNY_STREAM_API_KEY', '')
+BUNNY_STREAM_CDN_HOSTNAME = os.getenv('BUNNY_STREAM_CDN_HOSTNAME', '')
+BUNNY_STREAM_SECURITY_KEY = os.getenv('BUNNY_STREAM_SECURITY_KEY', '')

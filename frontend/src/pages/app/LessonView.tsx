@@ -65,26 +65,29 @@ export default function LessonView() {
   // Get saved video position for current lesson
   const savedVideoPosition = lesson && progress?.lesson_progress?.[lesson.id]?.video_position_seconds || 0;
 
-  // Mark lesson as complete (defined first to avoid circular dependency)
-  const handleMarkComplete = useCallback(async () => {
-    if (!lesson || isCurrentLessonCompleted) return;
+  // Toggle lesson completion
+  const handleToggleComplete = useCallback(async () => {
+    if (!lesson) return;
 
+    const newCompleted = !isCurrentLessonCompleted;
     setIsMarkingComplete(true);
     try {
-      await updateLessonProgress(slug, lessonSlug, { completed: true });
+      await updateLessonProgress(slug, lessonSlug, { completed: newCompleted });
       // Update local progress state
       setProgress((prev) => {
         if (!prev) {
           return {
-            completed_lesson_ids: [lesson.id],
+            completed_lesson_ids: newCompleted ? [lesson.id] : [],
             total_lessons: 1,
-            completed_count: 1,
-            percentage: 100,
+            completed_count: newCompleted ? 1 : 0,
+            percentage: newCompleted ? 100 : 0,
             next_lesson_slug: null,
-            lesson_progress: { [lesson.id]: { completed: true, video_position_seconds: 0 } },
+            lesson_progress: { [lesson.id]: { completed: newCompleted, video_position_seconds: 0 } },
           };
         }
-        const newCompletedIds = [...prev.completed_lesson_ids, lesson.id];
+        const newCompletedIds = newCompleted
+          ? [...prev.completed_lesson_ids, lesson.id]
+          : prev.completed_lesson_ids.filter((id) => id !== lesson.id);
         return {
           ...prev,
           completed_lesson_ids: newCompletedIds,
@@ -93,7 +96,7 @@ export default function LessonView() {
         };
       });
     } catch (err) {
-      console.error('Failed to mark lesson complete:', err);
+      console.error('Failed to update lesson completion:', err);
     } finally {
       setIsMarkingComplete(false);
     }
@@ -119,9 +122,9 @@ export default function LessonView() {
     // Auto-complete at 90% (only once per session)
     if (percentWatched >= 90 && !isCurrentLessonCompleted && !hasAutoCompletedRef.current) {
       hasAutoCompletedRef.current = true;
-      handleMarkComplete();
+      handleToggleComplete();
     }
-  }, [isCurrentLessonCompleted, handleMarkComplete]);
+  }, [isCurrentLessonCompleted, handleToggleComplete]);
 
   // Save position on pause
   const handleVideoPause = useCallback((e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -176,6 +179,11 @@ export default function LessonView() {
   // Set of completed lesson IDs for sidebar
   const completedIds = new Set(progress?.completed_lesson_ids || []);
 
+  // Find current module name for context
+  const currentModule = structure?.modules.find((m) =>
+    m.lessons.some((l) => l.slug === lessonSlug)
+  );
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -213,22 +221,32 @@ export default function LessonView() {
         </div>
 
         {/* Video player */}
-        {lesson.video_url && (
+        {(lesson.signed_video_url || lesson.video_url) && (
           <div className="aspect-video bg-black rounded-lg overflow-hidden">
-            {lesson.video_url.includes('youtube.com') || lesson.video_url.includes('youtu.be') ? (
+            {/* Bunny Stream signed embed takes priority */}
+            {lesson.signed_video_url ? (
+              <iframe
+                src={lesson.signed_video_url}
+                className="w-full h-full"
+                allowFullScreen
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                loading="lazy"
+                style={{ border: 'none' }}
+              />
+            ) : lesson.video_url?.includes('youtube.com') || lesson.video_url?.includes('youtu.be') ? (
               <iframe
                 src={lesson.video_url.replace('watch?v=', 'embed/')}
                 className="w-full h-full"
                 allowFullScreen
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               />
-            ) : lesson.video_url.includes('vimeo.com') ? (
+            ) : lesson.video_url?.includes('vimeo.com') ? (
               <iframe
                 src={lesson.video_url.replace('vimeo.com', 'player.vimeo.com/video')}
                 className="w-full h-full"
                 allowFullScreen
               />
-            ) : (
+            ) : lesson.video_url ? (
               <video
                 ref={videoRef}
                 src={lesson.video_url}
@@ -238,7 +256,7 @@ export default function LessonView() {
                 onPause={handleVideoPause}
                 onEnded={handleVideoPause}
               />
-            )}
+            ) : null}
           </div>
         )}
 
@@ -277,32 +295,8 @@ export default function LessonView() {
           ) : null}
         </Card>
 
-        {/* Mark Complete Button */}
-        <div className="flex items-center justify-center py-4 border-t">
-          {isCurrentLessonCompleted ? (
-            <div className="flex items-center gap-2 text-primary">
-              <Icon name="CheckCircle2" className="h-5 w-5" />
-              <span className="font-medium">Lesson Completed</span>
-            </div>
-          ) : (
-            <Button
-              onClick={handleMarkComplete}
-              disabled={isMarkingComplete}
-              size="lg"
-              className="min-w-[200px]"
-            >
-              {isMarkingComplete ? (
-                <Icon name="Loader2" className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Icon name="CheckCircle" className="mr-2 h-4 w-4" />
-              )}
-              Mark as Complete
-            </Button>
-          )}
-        </div>
-
         {/* Navigation */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pb-24 lg:pb-0">
           {prev ? (
             <Button asChild variant="outline">
               <Link to={`/app/courses/${slug}/${prev.lesson.slug}`}>
@@ -329,12 +323,40 @@ export default function LessonView() {
             </Button>
           )}
         </div>
+
+        {/* Mobile completion bar - fixed at bottom */}
+        <div className="fixed bottom-0 left-0 right-0 lg:hidden border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 p-4 z-40">
+          <div className="container max-w-3xl mx-auto flex items-center gap-3">
+            <Button
+              onClick={handleToggleComplete}
+              disabled={isMarkingComplete}
+              variant={isCurrentLessonCompleted ? "outline" : "default"}
+              className="flex-1"
+            >
+              {isMarkingComplete ? (
+                <Icon name="Loader2" className="mr-2 h-4 w-4 animate-spin" />
+              ) : isCurrentLessonCompleted ? (
+                <Icon name="CheckCircle2" className="mr-2 h-4 w-4 text-primary" />
+              ) : (
+                <Icon name="Circle" className="mr-2 h-4 w-4" />
+              )}
+              {isCurrentLessonCompleted ? "Completed" : "Mark Complete"}
+            </Button>
+            {next && (
+              <Button asChild variant="outline" size="icon">
+                <Link to={`/app/courses/${slug}/${next.lesson.slug}`}>
+                  <Icon name="ChevronRight" className="h-4 w-4" />
+                </Link>
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Sidebar - Course outline */}
       <div className="hidden lg:block">
-        <Card className="sticky top-20">
-          <CardHeader>
+        <Card className="sticky top-20 flex flex-col max-h-[calc(100vh-6rem)]">
+          <CardHeader className="shrink-0">
             <CardTitle className="text-base">Course Content</CardTitle>
             {progress && (
               <div className="space-y-1.5 mt-2">
@@ -351,7 +373,9 @@ export default function LessonView() {
               </div>
             )}
           </CardHeader>
-          <CardContent className="max-h-[60vh] overflow-y-auto">
+
+          {/* Scrollable lesson list */}
+          <CardContent className="flex-1 overflow-y-auto min-h-0">
             {structure?.modules.map((module) => (
               <div key={module.id} className="mb-4">
                 <h4 className="font-medium text-sm mb-2">{module.title}</h4>
@@ -387,6 +411,34 @@ export default function LessonView() {
               </div>
             ))}
           </CardContent>
+
+          {/* Completion section - fixed at bottom */}
+          <div className="shrink-0 border-t p-4 space-y-3 bg-card">
+            {/* Current lesson context */}
+            <div className="text-xs text-muted-foreground">
+              {currentModule && (
+                <span className="font-medium">{currentModule.title}</span>
+              )}
+            </div>
+
+            {/* Toggle completion button */}
+            <Button
+              onClick={handleToggleComplete}
+              disabled={isMarkingComplete}
+              variant={isCurrentLessonCompleted ? "outline" : "default"}
+              className="w-full"
+              size="lg"
+            >
+              {isMarkingComplete ? (
+                <Icon name="Loader2" className="mr-2 h-4 w-4 animate-spin" />
+              ) : isCurrentLessonCompleted ? (
+                <Icon name="CheckCircle2" className="mr-2 h-4 w-4 text-primary" />
+              ) : (
+                <Icon name="Circle" className="mr-2 h-4 w-4" />
+              )}
+              {isCurrentLessonCompleted ? "Completed" : "Mark Complete"}
+            </Button>
+          </div>
         </Card>
       </div>
     </PageWrapper>

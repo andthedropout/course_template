@@ -11,14 +11,28 @@ import {
   deleteLesson,
   reorderModules,
   reorderLessons,
+  fetchTags,
+  fetchAllCourses,
+  addPrerequisite,
+  removePrerequisite,
   CourseFull,
   Module,
+  Tag,
+  CoursePrerequisite,
 } from '@/api/courses';
 import { uploadBlogImage } from '@/api/blog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -70,6 +84,16 @@ export default function CourseBuilder() {
   const [saleorProductId, setSaleorProductId] = useState('');
   const [status, setStatus] = useState<'draft' | 'published'>('draft');
 
+  // New metadata fields
+  const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced' | null>(null);
+  const [learningObjectives, setLearningObjectives] = useState<string[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+  const [prerequisites, setPrerequisites] = useState<CoursePrerequisite[]>([]);
+
+  // Available options for tags and prerequisites
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const [allCourses, setAllCourses] = useState<CourseFull[]>([]);
+
   // Thumbnail upload
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [isDraggingThumbnail, setIsDraggingThumbnail] = useState(false);
@@ -98,7 +122,21 @@ export default function CourseBuilder() {
 
   useEffect(() => {
     loadCourse();
+    loadTagsAndCourses();
   }, [slug]);
+
+  async function loadTagsAndCourses() {
+    try {
+      const [tags, courses] = await Promise.all([
+        fetchTags(),
+        fetchAllCourses(),
+      ]);
+      setAvailableTags(tags);
+      setAllCourses(courses);
+    } catch (err) {
+      console.error('Failed to load tags/courses:', err);
+    }
+  }
 
   async function loadCourse() {
     try {
@@ -111,6 +149,11 @@ export default function CourseBuilder() {
       setThumbnailUrl(data.thumbnail_url || '');
       setSaleorProductId(data.saleor_product_id || '');
       setStatus(data.status);
+      // New metadata fields
+      setDifficulty(data.difficulty || null);
+      setLearningObjectives(data.learning_objectives || []);
+      setSelectedTagIds(data.tags?.map(t => t.id) || []);
+      setPrerequisites(data.prerequisites || []);
       // Expand all modules by default
       setExpandedModules(new Set(data.modules?.map((m) => m.id) || []));
     } catch (err) {
@@ -130,6 +173,9 @@ export default function CourseBuilder() {
         thumbnail_url: thumbnailUrl,
         saleor_product_id: saleorProductId,
         status,
+        difficulty,
+        learning_objectives: learningObjectives.filter(o => o.trim()),
+        tag_ids: selectedTagIds,
       });
       // Preserve modules since the PATCH endpoint may not return them
       setCourse((prev) => prev ? { ...prev, ...updated, modules: prev.modules } : updated);
@@ -147,6 +193,55 @@ export default function CourseBuilder() {
     } finally {
       setIsSaving(false);
     }
+  }
+
+  // Prerequisite management
+  async function handleAddPrerequisite(requiredCourseId: number, enforcement: 'recommended' | 'required') {
+    try {
+      const prereq = await addPrerequisite(slug, { required_course_id: requiredCourseId, enforcement });
+      setPrerequisites(prev => [...prev, prereq]);
+      toast({ title: 'Prerequisite added' });
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: err instanceof Error ? err.message : 'Failed to add prerequisite',
+        variant: 'destructive',
+      });
+    }
+  }
+
+  async function handleRemovePrerequisite(prerequisiteId: number) {
+    try {
+      await removePrerequisite(slug, prerequisiteId);
+      setPrerequisites(prev => prev.filter(p => p.id !== prerequisiteId));
+      toast({ title: 'Prerequisite removed' });
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: err instanceof Error ? err.message : 'Failed to remove prerequisite',
+        variant: 'destructive',
+      });
+    }
+  }
+
+  // Learning objectives helpers
+  function addObjective() {
+    setLearningObjectives(prev => [...prev, '']);
+  }
+
+  function updateObjective(index: number, value: string) {
+    setLearningObjectives(prev => prev.map((o, i) => i === index ? value : o));
+  }
+
+  function removeObjective(index: number) {
+    setLearningObjectives(prev => prev.filter((_, i) => i !== index));
+  }
+
+  // Tag helpers
+  function toggleTag(tagId: number) {
+    setSelectedTagIds(prev =>
+      prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
+    );
   }
 
   async function handleCreateModule() {
@@ -541,6 +636,156 @@ export default function CourseBuilder() {
                     }
                   }}
                 />
+              </div>
+            </div>
+
+            <div className="h-px bg-border" />
+
+            {/* Course Details */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Course Details
+              </h3>
+
+              {/* Difficulty Level */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium">Difficulty Level</Label>
+                <Select
+                  value={difficulty || 'none'}
+                  onValueChange={(value) => setDifficulty(value === 'none' ? null : value as 'beginner' | 'intermediate' | 'advanced')}
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Select difficulty (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="beginner">Beginner</SelectItem>
+                    <SelectItem value="intermediate">Intermediate</SelectItem>
+                    <SelectItem value="advanced">Advanced</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Learning Objectives */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium">Learning Objectives</Label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  What will students learn?
+                </p>
+                <div className="space-y-2">
+                  {learningObjectives.map((objective, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={objective}
+                        onChange={(e) => updateObjective(index, e.target.value)}
+                        placeholder={`Objective ${index + 1}`}
+                        className="h-9 text-sm"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 shrink-0"
+                        onClick={() => removeObjective(index)}
+                      >
+                        <Icon name="X" className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addObjective}
+                    className="w-full"
+                  >
+                    <Icon name="Plus" className="h-4 w-4 mr-1" />
+                    Add Objective
+                  </Button>
+                </div>
+              </div>
+
+              {/* Tags */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium">Tags</Label>
+                <div className="flex flex-wrap gap-2">
+                  {availableTags.map((tag) => (
+                    <Badge
+                      key={tag.id}
+                      variant={selectedTagIds.includes(tag.id) ? 'default' : 'outline'}
+                      className="cursor-pointer transition-colors"
+                      onClick={() => toggleTag(tag.id)}
+                    >
+                      {tag.name}
+                      {selectedTagIds.includes(tag.id) && (
+                        <Icon name="Check" className="h-3 w-3 ml-1" />
+                      )}
+                    </Badge>
+                  ))}
+                  {availableTags.length === 0 && (
+                    <p className="text-xs text-muted-foreground">No tags available</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Prerequisites */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium">Prerequisites</Label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Courses to complete first
+                </p>
+                {prerequisites.length > 0 && (
+                  <div className="space-y-2 mb-2">
+                    {prerequisites.map((prereq) => (
+                      <div
+                        key={prereq.id}
+                        className="flex items-center justify-between p-2 rounded-lg bg-muted/50 text-sm"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Icon name="BookOpen" className="h-4 w-4 shrink-0 text-muted-foreground" />
+                          <span className="truncate">{prereq.required_course_title}</span>
+                          <Badge variant="outline" className="text-xs shrink-0">
+                            {prereq.enforcement}
+                          </Badge>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 shrink-0"
+                          onClick={() => handleRemovePrerequisite(prereq.id)}
+                        >
+                          <Icon name="X" className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <Select
+                  value=""
+                  onValueChange={(value) => {
+                    const courseId = parseInt(value);
+                    if (!isNaN(courseId)) {
+                      handleAddPrerequisite(courseId, 'recommended');
+                    }
+                  }}
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Add prerequisite..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allCourses
+                      .filter(c => c.slug !== slug && !prerequisites.some(p => p.required_course_id === c.id))
+                      .map((c) => (
+                        <SelectItem key={c.id} value={c.id.toString()}>
+                          {c.title}
+                        </SelectItem>
+                      ))}
+                    {allCourses.filter(c => c.slug !== slug && !prerequisites.some(p => p.required_course_id === c.id)).length === 0 && (
+                      <SelectItem value="none" disabled>No other courses available</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

@@ -1,6 +1,6 @@
 // Block type definitions for the Course Builder CMS
 
-export type BlockType = 'text' | 'video' | 'code' | 'callout' | 'image' | 'divider';
+export type BlockType = 'text' | 'video' | 'code' | 'callout' | 'image' | 'divider' | 'resource';
 
 export interface TextBlockData {
   markdown: string;
@@ -10,6 +10,18 @@ export interface VideoBlockData {
   url: string;
   title?: string;
   poster?: string;
+  // Bunny Stream video support
+  bunny_video_id?: number | null;
+  bunny_video?: {
+    id: number;
+    guid: string;
+    title: string;
+    thumbnail_url: string;
+    thumbnail_blurhash?: string;
+    duration_seconds: number | null;
+    status: string;
+  } | null;
+  signed_video_url?: string | null;
 }
 
 export interface CodeBlockData {
@@ -36,13 +48,28 @@ export interface DividerBlockData {
   style?: 'line' | 'dots' | 'space';
 }
 
+export interface ResourceFile {
+  id: string;
+  name: string;
+  url: string;
+  size: number;
+  type: string;
+}
+
+export interface ResourceBlockData {
+  files: ResourceFile[];
+  title?: string;
+  description?: string;
+}
+
 export type BlockData =
   | TextBlockData
   | VideoBlockData
   | CodeBlockData
   | CalloutBlockData
   | ImageBlockData
-  | DividerBlockData;
+  | DividerBlockData
+  | ResourceBlockData;
 
 export interface LessonBlock<T extends BlockData = BlockData> {
   id: string;
@@ -74,6 +101,10 @@ export function isImageBlock(block: LessonBlock): block is LessonBlock<ImageBloc
 
 export function isDividerBlock(block: LessonBlock): block is LessonBlock<DividerBlockData> {
   return block.type === 'divider';
+}
+
+export function isResourceBlock(block: LessonBlock): block is LessonBlock<ResourceBlockData> {
+  return block.type === 'resource';
 }
 
 // Block metadata for UI
@@ -121,6 +152,12 @@ export const BLOCK_TYPES: BlockMeta[] = [
     icon: 'Minus',
     description: 'Visual separator between sections',
   },
+  {
+    type: 'resource',
+    label: 'Resources',
+    icon: 'Download',
+    description: 'Downloadable files and materials',
+  },
 ];
 
 // Create a new empty block
@@ -141,7 +178,22 @@ export function createBlock(type: BlockType): LessonBlock {
       return { ...base, data: { url: '', alt: '', caption: '' } };
     case 'divider':
       return { ...base, data: { style: 'line' } };
+    case 'resource':
+      return { ...base, data: { files: [], title: '', description: '' } };
   }
+}
+
+// Bunny video reference
+export interface BunnyVideoRef {
+  id: number;
+  guid: string;
+  title: string;
+  duration_seconds: number | null;
+  thumbnail_url: string;
+  thumbnail_blurhash?: string;
+  status: 'uploading' | 'processing' | 'ready' | 'failed';
+  file_size_bytes: number | null;
+  created_at: string;
 }
 
 // Lesson data from API
@@ -151,6 +203,9 @@ export interface Lesson {
   slug: string;
   blocks: LessonBlock[];
   video_url: string;
+  bunny_video?: BunnyVideoRef | null;
+  bunny_video_id?: number | null; // For write operations
+  signed_video_url?: string | null;
   duration_minutes: number;
   order: number;
   is_free_preview: boolean;

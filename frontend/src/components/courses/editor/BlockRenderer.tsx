@@ -6,6 +6,7 @@ import {
   isCalloutBlock,
   isImageBlock,
   isDividerBlock,
+  isResourceBlock,
 } from './types';
 import {
   TextBlock,
@@ -14,6 +15,7 @@ import {
   CalloutBlock,
   ImageBlock,
   DividerBlock,
+  ResourceBlock,
 } from './blocks';
 
 interface BlockRendererProps {
@@ -80,6 +82,16 @@ export function BlockRenderer({ block, onChange, isEditing }: BlockRendererProps
   if (isDividerBlock(block)) {
     return (
       <DividerBlock
+        data={block.data}
+        onChange={handleDataChange}
+        isEditing={isEditing}
+      />
+    );
+  }
+
+  if (isResourceBlock(block)) {
+    return (
+      <ResourceBlock
         data={block.data}
         onChange={handleDataChange}
         isEditing={isEditing}

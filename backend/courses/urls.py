@@ -18,6 +18,16 @@ urlpatterns = [
     path('cms/<slug:course_slug>/lessons/<slug:lesson_slug>/', views.StaffLessonDetailView.as_view(), name='staff-lesson-detail'),
     path('cms/<slug:course_slug>/reorder-modules/', views.ReorderModulesView.as_view(), name='reorder-modules'),
     path('cms/<slug:course_slug>/reorder-lessons/', views.ReorderLessonsView.as_view(), name='reorder-lessons'),
+    path('cms/<slug:course_slug>/prerequisites/', views.add_course_prerequisite, name='add-prerequisite'),
+    path('cms/<slug:course_slug>/prerequisites/<int:prerequisite_id>/', views.remove_course_prerequisite, name='remove-prerequisite'),
+
+    # ============ Bunny Stream Video Routes (Staff) ============
+    path('videos/', views.list_bunny_videos, name='bunny-video-list'),
+    path('videos/upload/', views.create_bunny_upload, name='bunny-upload-init'),
+    path('videos/<int:video_id>/confirm/', views.confirm_bunny_upload, name='bunny-upload-confirm'),
+    path('videos/<int:video_id>/status/', views.check_video_status, name='bunny-video-status'),
+    path('videos/<int:video_id>/thumbnail/', views.get_video_thumbnail, name='bunny-video-thumbnail'),
+    path('videos/<int:video_id>/', views.delete_bunny_video, name='bunny-video-delete'),
 
     # ============ Public Routes ============
     # Course list and detail

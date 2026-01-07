@@ -4,6 +4,7 @@ import { fetchCourseStructure, fetchCourseProgress, type CourseStructure, type C
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
@@ -13,6 +14,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+
+const difficultyColors = {
+  beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+  advanced: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+};
 
 export default function CoursePlayer() {
   const { slug } = useParams({ from: '/app/courses_/$slug/' });
@@ -121,11 +128,31 @@ export default function CoursePlayer() {
           {/* Course title + stats + Start button */}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">{structure.course.title}</h1>
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-3xl font-bold tracking-tight">{structure.course.title}</h1>
+                {structure.course.difficulty && (
+                  <Badge
+                    variant="secondary"
+                    className={`capitalize ${difficultyColors[structure.course.difficulty]}`}
+                  >
+                    {structure.course.difficulty}
+                  </Badge>
+                )}
+              </div>
               <p className="text-muted-foreground mt-2">
                 {structure.modules.length} modules · {totalLessons} lessons
                 {totalDuration > 0 && ` · ${formatDuration(totalDuration)}`}
               </p>
+              {/* Tags */}
+              {structure.course.tags && structure.course.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  {structure.course.tags.map((tag) => (
+                    <Badge key={tag.id} variant="outline">
+                      {tag.name}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
             {nextLessonSlug && (
               <Button asChild size="lg" className="shrink-0">
@@ -147,6 +174,61 @@ export default function CoursePlayer() {
               <MarkdownRenderer>{structure.course.description}</MarkdownRenderer>
             </div>
           ) : null}
+
+          {/* Learning Objectives */}
+          {structure.course.learning_objectives && structure.course.learning_objectives.length > 0 && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Icon name="Target" className="h-5 w-5 text-primary" />
+                  What You'll Learn
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="grid gap-3 sm:grid-cols-2">
+                  {structure.course.learning_objectives.map((objective, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <Icon name="Check" className="h-4 w-4 mt-1 text-primary shrink-0" />
+                      <span className="text-sm">{objective}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Prerequisites */}
+          {structure.course.prerequisites && structure.course.prerequisites.length > 0 && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Icon name="GitBranch" className="h-5 w-5 text-primary" />
+                  Prerequisites
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {structure.course.prerequisites.map((prereq) => (
+                    <Link
+                      key={prereq.id}
+                      to={`/app/courses/${prereq.required_course_slug}`}
+                      className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted transition-colors group"
+                    >
+                      <Icon name="BookOpen" className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium group-hover:text-primary transition-colors">
+                          {prereq.required_course_title}
+                        </p>
+                      </div>
+                      <Badge variant={prereq.enforcement === 'required' ? 'default' : 'secondary'}>
+                        {prereq.enforcement === 'required' ? 'Required' : 'Recommended'}
+                      </Badge>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Right: Stats + Navigation */}
